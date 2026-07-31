@@ -233,10 +233,22 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "salfcard-store",
-      // Безопасное хранилище: на сервере (SSR) не обращаемся к localStorage.
+      // Безопасное хранилище: на сервере (SSR) не обращаемся к localStorage,
+      // а запись оборачиваем в try/catch, чтобы переполнение не роняло приложение.
       storage: createJSONStorage(() =>
         typeof window !== "undefined"
-          ? window.localStorage
+          ? {
+              getItem: (key) => window.localStorage.getItem(key),
+              setItem: (key, value) => {
+                try {
+                  window.localStorage.setItem(key, value);
+                } catch (e) {
+                  // Например, QuotaExceededError при слишком большом изображении.
+                  console.warn("Не удалось записать в localStorage:", e);
+                }
+              },
+              removeItem: (key) => window.localStorage.removeItem(key),
+            }
           : {
               getItem: () => null,
               setItem: () => {},

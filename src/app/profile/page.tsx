@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { useStore } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
-import { fileToDataUrl, cn } from "@/lib/utils";
+import { compressImageFile, cn } from "@/lib/utils";
 import type { Tariff } from "@/types";
 
 export default function ProfilePage() {
@@ -36,7 +36,7 @@ function Profile() {
   const onPickAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const dataUrl = await fileToDataUrl(file);
+    const dataUrl = await compressImageFile(file, { maxDimension: 400, mime: "image/jpeg", quality: 0.85 });
     setAvatar(dataUrl);
     e.target.value = "";
   };

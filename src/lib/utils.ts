@@ -169,3 +169,54 @@ export async function writeNfcTag(url: string): Promise<NfcWriteResult> {
 
   return { supported: false, ok: false };
 }
+
+/**
+ * Уменьшает и сжимает изображение на стороне клиента, возвращая data-URL.
+ * Нужно, чтобы аватар/логотип/фон не переполняли localStorage
+ * (фото с телефона весит мегабайты, а лимит хранилища ~5 МБ).
+ * При любой ошибке возвращает исходный data-URL без обработки.
+ */
+export function compressImageFile(
+  file: File,
+  opts: { maxDimension?: number; mime?: string; quality?: number } = {}
+): Promise<string> {
+  const { maxDimension = 1280, mime = "image/jpeg", quality = 0.82 } = opts;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Не удалось прочитать файл"));
+    reader.onload = () => {
+      const src = String(reader.result);
+      const img = new Image();
+      img.onerror = () => resolve(src);
+      img.onload = () => {
+        try {
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDimension || height > maxDimension) {
+            if (width >= height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(src);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL(mime, quality));
+        } catch {
+          resolve(src);
+        }
+      };
+      img.src = src;
+    };
+    reader.readAsDataURL(file);
+  });
+}

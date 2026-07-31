@@ -23,7 +23,7 @@ import { Field, Input, Label, Select, Textarea } from "@/components/ui/Field";
 import { settingsSchema, type SettingsValues } from "@/lib/schemas";
 import { useStore } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
-import { createDefaultSettings, fileToDataUrl, uid } from "@/lib/utils";
+import { createDefaultSettings, compressImageFile, uid } from "@/lib/utils";
 import {
   NETWORKING_ACTION_OPTIONS,
   CUSTOM_ACTION_VALUE,
@@ -488,7 +488,15 @@ function UploadField({
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const dataUrl = await fileToDataUrl(file);
+    // Логотип — небольшой PNG (сохраняем прозрачность), фон — сжатый JPEG.
+    const dataUrl =
+      preview === "logo"
+        ? await compressImageFile(file, { maxDimension: 400, mime: "image/png" })
+        : await compressImageFile(file, {
+            maxDimension: 1280,
+            mime: "image/jpeg",
+            quality: 0.82,
+          });
     onPick(dataUrl);
     e.target.value = "";
   };
