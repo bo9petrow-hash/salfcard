@@ -176,43 +176,89 @@ export async function writeNfcTag(url: string): Promise<NfcWriteResult> {
  * (фото с телефона весит мегабайты, а лимит хранилища ~5 МБ).
  * При любой ошибке возвращает исходный data-URL без обработки.
  */
+/** Приблизительный размер data-URL в байтах. */
+export function dataUrlBytes(dataUrl: string): number {
+  const i = dataUrl.indexOf(",");
+  const b64 = i >= 0 ? dataUrl.slice(i + 1) : dataUrl;
+  return Math.floor((b64.length * 3) / 4);
+}
+
 export function compressImageFile(
   file: File,
-  opts: { maxDimension?: number; mime?: string; quality?: number } = {}
+  opts: {
+    maxDimension?: number;
+    mime?: string;
+    quality?: number;
+    maxBytes?: number;
+  } = {}
 ): Promise<string> {
-  const { maxDimension = 1280, mime = "image/jpeg", quality = 0.82 } = opts;
+  const {
+    maxDimension = 1200,
+    mime = "image/jpeg",
+    quality = 0.82,
+    maxBytes = 700_000,
+  } = opts;
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Не удалось прочитать файл"));
+    reader.onerror = () =>
+      reject(new Error("Не удалось прочитать файл."));
     reader.onload = () => {
       const src = String(reader.result);
       const img = new Image();
-      img.onerror = () => resolve(src);
+      // Файл не читается как картинка (например, HEIC) — сообщаем об этом.
+      img.onerror = () =>
+        reject(
+          new Error(
+            "Не удалось обработать изображение. Выберите файл в формате JPG или PNG."
+          )
+        );
       img.onload = () => {
         try {
           let width = img.width;
           let height = img.height;
-          if (width > maxDimension || height > maxDimension) {
-            if (width >= height) {
-              height = Math.round((height * maxDimension) / width);
-              width = maxDimension;
-            } else {
-              width = Math.round((width * maxDimension) / height);
-              height = maxDimension;
+          const fit = (dim: number) => {
+            if (width > dim || height > dim) {
+              if (width >= height) {
+                height = Math.round((height * dim) / width);
+                width = dim;
+              } else {
+                width = Math.round((width * dim) / height);
+                height = dim;
+              }
             }
+          };
+          fit(maxDimension);
+
+          const render = (q: number) => {
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return src;
+            ctx.drawImage(img, 0, 0, width, height);
+            return canvas.toDataURL(mime, q);
+          };
+
+          let q = quality;
+          let out = render(q);
+          let guard = 0;
+          // Ужимаем, пока не уложимся в бюджет по размеру (качество, затем размер).
+          while (dataUrlBytes(out) > maxBytes && guard < 10) {
+            guard += 1;
+            if (mime !== "image/png" && q > 0.4) {
+              q -= 0.12;
+            } else {
+              width = Math.round(width * 0.85);
+              height = Math.round(height * 0.85);
+            }
+            out = render(q);
           }
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) {
-            resolve(src);
-            return;
-          }
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL(mime, quality));
+          resolve(out);
         } catch {
-          resolve(src);
+          reject(
+            new Error("Не удалось обработать изображение. Попробуйте другой файл.")
+          );
         }
       };
       img.src = src;

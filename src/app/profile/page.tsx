@@ -29,16 +29,27 @@ function Profile() {
 
   const [nameDraft, setNameDraft] = useState(user.name || "");
   const [saved, setSaved] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const isBusiness = user.tariff === "Бизнес";
 
   const onPickAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const dataUrl = await compressImageFile(file, { maxDimension: 400, mime: "image/jpeg", quality: 0.85 });
-    setAvatar(dataUrl);
     e.target.value = "";
+    if (!file) return;
+    setAvatarError("");
+    try {
+      const dataUrl = await compressImageFile(file, {
+        maxDimension: 400,
+        mime: "image/jpeg",
+        quality: 0.85,
+        maxBytes: 300_000,
+      });
+      setAvatar(dataUrl);
+    } catch (err: any) {
+      setAvatarError(err?.message || "Не удалось загрузить изображение.");
+    }
   };
 
   const handleSave = () => {
@@ -103,6 +114,9 @@ function Profile() {
                   ? "Аватар отображается на вашей визитке."
                   : "На визитке аватар доступен в тарифе «Бизнес»."}
               </p>
+              {avatarError && (
+                <p className="text-xs text-red-400">{avatarError}</p>
+              )}
               <input
                 ref={fileRef}
                 type="file"

@@ -484,21 +484,36 @@ function UploadField({
   onClear: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [uploadError, setUploadError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    // Логотип — небольшой PNG (сохраняем прозрачность), фон — сжатый JPEG.
-    const dataUrl =
-      preview === "logo"
-        ? await compressImageFile(file, { maxDimension: 400, mime: "image/png" })
-        : await compressImageFile(file, {
-            maxDimension: 1280,
-            mime: "image/jpeg",
-            quality: 0.82,
-          });
-    onPick(dataUrl);
     e.target.value = "";
+    if (!file) return;
+    setUploadError("");
+    setBusy(true);
+    try {
+      // Логотип — небольшой PNG (сохраняем прозрачность), фон — сжатый JPEG.
+      const dataUrl =
+        preview === "logo"
+          ? await compressImageFile(file, {
+              maxDimension: 320,
+              mime: "image/png",
+              maxBytes: 300_000,
+            })
+          : await compressImageFile(file, {
+              maxDimension: 1200,
+              mime: "image/jpeg",
+              quality: 0.8,
+              maxBytes: 600_000,
+            });
+      onPick(dataUrl);
+    } catch (err: any) {
+      setUploadError(err?.message || "Не удалось загрузить изображение.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -543,11 +558,11 @@ function UploadField({
           type="button"
           variant="secondary"
           size="sm"
-          disabled={disabled}
+          disabled={disabled || busy}
           onClick={() => inputRef.current?.click()}
         >
           <Upload size={15} />
-          Выбрать файл
+          {busy ? "Обработка…" : "Выбрать файл"}
         </Button>
         <span className="text-xs text-slate-400">
           {value && !disabled ? "Файл выбран" : "Файл не выбран"}
@@ -561,6 +576,10 @@ function UploadField({
           onChange={handleFile}
         />
       </div>
+
+      {uploadError && !disabled && (
+        <p className="text-xs text-red-400">{uploadError}</p>
+      )}
 
       {disabled && (
         <p className="text-xs text-slate-400">Доступно в тарифе «Бизнес»</p>
