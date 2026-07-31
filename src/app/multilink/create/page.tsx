@@ -102,7 +102,7 @@ function CreateMultilink() {
                 </span>
                 <input
                   placeholder="ваш-адрес"
-                  className="h-11 w-full bg-night-900/40 px-3 text-sm text-white placeholder:text-slate-500 focus:outline-none"
+                  className="h-11 w-full bg-night-900/40 px-3 text-base text-white placeholder:text-slate-500 focus:outline-none"
                   {...register("slug")}
                 />
               </div>

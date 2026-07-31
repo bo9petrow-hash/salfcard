@@ -24,7 +24,11 @@ import { settingsSchema, type SettingsValues } from "@/lib/schemas";
 import { useStore } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
 import { createDefaultSettings, fileToDataUrl, uid } from "@/lib/utils";
-import { ACTION_BUTTON_OPTIONS, type MultilinkSettings } from "@/types";
+import {
+  NETWORKING_ACTION_OPTIONS,
+  CUSTOM_ACTION_VALUE,
+  type MultilinkSettings,
+} from "@/types";
 
 export default function EditMultilinkPage() {
   return (
@@ -46,6 +50,7 @@ function EditMultilink() {
 
   const isBusiness = tariff === "Бизнес";
   const [saved, setSaved] = useState(false);
+  const [customAction, setCustomAction] = useState(false);
 
   const {
     register,
@@ -54,6 +59,7 @@ function EditMultilink() {
     reset,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
@@ -74,6 +80,14 @@ function EditMultilink() {
     if (hydrated && multilink && loadedRef.current !== multilink.id) {
       reset(multilink.settings);
       loadedRef.current = multilink.id;
+      // Определяем, был ли сохранён «свой вариант» кнопки действия.
+      const lbl = multilink.settings.contacts.actionButton.label;
+      setCustomAction(
+        multilink.type === "self" &&
+          !!lbl &&
+          lbl !== "Не использовать" &&
+          !(NETWORKING_ACTION_OPTIONS as readonly string[]).includes(lbl)
+      );
     }
   }, [hydrated, multilink, reset]);
 
@@ -86,16 +100,19 @@ function EditMultilink() {
     updateMultilink(id, values as MultilinkSettings);
   };
 
-  const onSave = (values: SettingsValues) => {
-    persist(values);
+  // Сохранение всегда берёт актуальные значения формы и пишет их в Zustand
+  // (и через persist — в localStorage), не блокируясь валидацией.
+  const saveNow = () => {
+    persist(getValues());
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
   };
 
-  const onPreview = handleSubmit((values) => {
-    persist(values);
-    window.open(`/preview/${id}`, "_blank");
-  });
+  // Сохраняем и открываем превью в этой же вкладке (надёжно на мобильных).
+  const openPreview = () => {
+    persist(getValues());
+    router.push(`/preview/${id}`);
+  };
 
   if (!hydrated) {
     return <PageSkeleton />;
@@ -124,7 +141,13 @@ function EditMultilink() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSave)} className="space-y-5">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveNow();
+      }}
+      className="space-y-5"
+    >
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-white"
@@ -141,7 +164,7 @@ function EditMultilink() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button type="button" variant="secondary" onClick={onPreview}>
+          <Button type="button" variant="secondary" onClick={openPreview}>
             <Eye size={16} />
             Просмотреть страницу
           </Button>
@@ -335,25 +358,81 @@ function EditMultilink() {
 
       {/* Кнопка действия */}
       <SectionCard title="Кнопка действия">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Название кнопки">
-            <Select {...register("contacts.actionButton.label")}>
-              {ACTION_BUTTON_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          {actionLabel && actionLabel !== "Не использовать" && (
-            <Field label="Ссылка / значение">
+        {multilink.type === "self" ? (
+          // Нетворкинг: выпадающий список пресетов + «Свой вариант».
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Название кнопки">
+              <Select
+                value={
+                  customAction
+                    ? CUSTOM_ACTION_VALUE
+                    : actionLabel || "Не использовать"
+                }
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === CUSTOM_ACTION_VALUE) {
+                    setCustomAction(true);
+                    setValue("contacts.actionButton.label", "", {
+                      shouldDirty: true,
+                    });
+                  } else {
+                    setCustomAction(false);
+                    setValue("contacts.actionButton.label", v, {
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+              >
+                {NETWORKING_ACTION_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+                <option value={CUSTOM_ACTION_VALUE}>Свой вариант</option>
+              </Select>
+            </Field>
+
+            {customAction && (
+              <Field label="Своё название кнопки">
+                <Input
+                  placeholder="Например, Перейти в магазин"
+                  {...register("contacts.actionButton.label")}
+                />
+              </Field>
+            )}
+
+            {(customAction ||
+              (actionLabel && actionLabel !== "Не использовать")) && (
+              <Field
+                label="Ссылка / значение"
+                className={customAction ? "sm:col-span-2" : ""}
+              >
+                <Input
+                  placeholder="Например, https://... или +7 900 000-00-00"
+                  {...register("contacts.actionButton.url")}
+                />
+              </Field>
+            )}
+          </div>
+        ) : (
+          // Офлайн точка: свободное название + ссылка.
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Название кнопки" hint="Оставьте пустым, если кнопка не нужна.">
               <Input
-                placeholder="Например, https://... или +7 900 000-00-00"
-                {...register("contacts.actionButton.url")}
+                placeholder="Например, Меню заведения"
+                {...register("contacts.actionButton.label")}
               />
             </Field>
-          )}
-        </div>
+            {actionLabel && actionLabel !== "Не использовать" && (
+              <Field label="Ссылка / значение">
+                <Input
+                  placeholder="Например, https://..."
+                  {...register("contacts.actionButton.url")}
+                />
+              </Field>
+            )}
+          </div>
+        )}
       </SectionCard>
 
       {/* Обо мне */}
@@ -374,7 +453,7 @@ function EditMultilink() {
             Изменения сохранены
           </span>
         )}
-        <Button type="button" variant="secondary" onClick={onPreview}>
+        <Button type="button" variant="secondary" onClick={openPreview}>
           <Eye size={16} />
           Просмотреть страницу
         </Button>

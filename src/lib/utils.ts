@@ -55,7 +55,7 @@ export function createDefaultSettings(): MultilinkSettings {
         max: "",
       },
       actionButton: {
-        label: "Не использовать",
+        label: "",
         url: "",
       },
       about: "",

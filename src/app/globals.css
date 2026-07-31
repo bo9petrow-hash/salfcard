@@ -135,3 +135,17 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
+
+/* Мобильные: не масштабировать при фокусе на поле, убрать задержку тапа */
+input,
+textarea,
+select,
+button {
+  touch-action: manipulation;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}

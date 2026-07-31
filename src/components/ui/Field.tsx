@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 const baseControl =
-  "input-dark w-full rounded-lg px-3.5 text-sm transition-colors";
+  "input-dark w-full rounded-lg px-3.5 text-base transition-colors";
 
 export const Input = forwardRef<
   HTMLInputElement,
