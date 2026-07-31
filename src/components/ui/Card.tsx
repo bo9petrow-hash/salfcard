@@ -38,7 +38,7 @@ export function SectionCard({
   return (
     <Card className={className}>
       {(title || action) && (
-        <div className="flex items-start justify-between gap-3 border-b border-white/10 px-5 py-4 sm:px-6">
+        <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-start sm:justify-between sm:px-6">
           <div>
             {title && (
               <h2 className="text-base font-semibold text-white">{title}</h2>

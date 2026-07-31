@@ -98,7 +98,7 @@ export function Header() {
             {open && (
               <div
                 role="menu"
-                className="glass-strong absolute right-0 mt-2 w-60 overflow-hidden rounded-xl py-1.5 shadow-pop"
+                className="absolute right-0 mt-2 w-60 overflow-hidden rounded-xl border border-white/10 bg-night-800 py-1.5 shadow-pop"
               >
                 {MENU_ITEMS.map((item) => {
                   const Icon = item.icon;

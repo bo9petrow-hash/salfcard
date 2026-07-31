@@ -350,7 +350,7 @@ function Dashboard() {
         title="NFC Носители"
         description="Карты, брелоки и стикеры, привязанные к вашим страницам."
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Link href="/nfc">
               <Button size="sm" variant="secondary">
                 <Settings2 size={15} />
