@@ -67,7 +67,7 @@ export function Header() {
   if (isAuthPage) return null;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-night-900/60 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-night-900 shadow-lg shadow-black/30">
       <div className="mx-auto flex h-16 w-full max-w-3xl items-center justify-between px-4 sm:px-6">
         <Link href="/" aria-label="На главную">
           <Logo />
