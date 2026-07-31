@@ -21,7 +21,7 @@ import { SectionCard } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/Field";
 import { settingsSchema, type SettingsValues } from "@/lib/schemas";
-import { useStore } from "@/store/useStore";
+import { useStore, storageStatus } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
 import { createDefaultSettings, compressImageFile, uid } from "@/lib/utils";
 import {
@@ -50,6 +50,7 @@ function EditMultilink() {
 
   const isBusiness = tariff === "Бизнес";
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [customAction, setCustomAction] = useState(false);
 
   const {
@@ -104,6 +105,14 @@ function EditMultilink() {
   // (и через persist — в localStorage), не блокируясь валидацией.
   const saveNow = () => {
     persist(getValues());
+    if (!storageStatus.ok) {
+      setSaved(false);
+      setSaveError(
+        "Не удалось сохранить: хранилище браузера переполнено. Уберите фон или логотип полегче, либо очистите данные сайта в браузере."
+      );
+      return;
+    }
+    setSaveError("");
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
   };
@@ -446,21 +455,28 @@ function EditMultilink() {
       </SectionCard>
 
       {/* Нижние кнопки */}
-      <div className="flex flex-wrap items-center justify-end gap-2 pb-2">
-        {saved && (
-          <span className="mr-auto inline-flex items-center gap-1.5 text-sm text-brand-light">
-            <Check size={16} />
-            Изменения сохранены
-          </span>
+      <div className="pb-2">
+        {saveError && (
+          <p className="mb-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            {saveError}
+          </p>
         )}
-        <Button type="button" variant="secondary" onClick={openPreview}>
-          <Eye size={16} />
-          Просмотреть страницу
-        </Button>
-        <Button type="submit">
-          <Save size={16} />
-          Сохранить
-        </Button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {saved && (
+            <span className="mr-auto inline-flex items-center gap-1.5 text-sm text-brand-light">
+              <Check size={16} />
+              Изменения сохранены
+            </span>
+          )}
+          <Button type="button" variant="secondary" onClick={openPreview}>
+            <Eye size={16} />
+            Просмотреть страницу
+          </Button>
+          <Button type="submit">
+            <Save size={16} />
+            Сохранить
+          </Button>
+        </div>
       </div>
     </form>
   );
@@ -498,15 +514,15 @@ function UploadField({
       const dataUrl =
         preview === "logo"
           ? await compressImageFile(file, {
-              maxDimension: 320,
+              maxDimension: 256,
               mime: "image/png",
-              maxBytes: 300_000,
+              maxBytes: 110_000,
             })
           : await compressImageFile(file, {
-              maxDimension: 1200,
+              maxDimension: 900,
               mime: "image/jpeg",
-              quality: 0.8,
-              maxBytes: 600_000,
+              quality: 0.72,
+              maxBytes: 220_000,
             });
       onPick(dataUrl);
     } catch (err: any) {

@@ -7,7 +7,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { SectionCard } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
-import { useStore } from "@/store/useStore";
+import { useStore, storageStatus } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
 import { compressImageFile, cn } from "@/lib/utils";
 import type { Tariff } from "@/types";
@@ -41,12 +41,17 @@ function Profile() {
     setAvatarError("");
     try {
       const dataUrl = await compressImageFile(file, {
-        maxDimension: 400,
+        maxDimension: 256,
         mime: "image/jpeg",
-        quality: 0.85,
-        maxBytes: 300_000,
+        quality: 0.8,
+        maxBytes: 110_000,
       });
       setAvatar(dataUrl);
+      if (!storageStatus.ok) {
+        setAvatarError(
+          "Не удалось сохранить: хранилище браузера переполнено. Очистите данные сайта в браузере и попробуйте снова."
+        );
+      }
     } catch (err: any) {
       setAvatarError(err?.message || "Не удалось загрузить изображение.");
     }

@@ -71,6 +71,10 @@ const initialUser: User = {
 // Промокоды-заглушки: любой из них повышает тариф до «Бизнес».
 const BUSINESS_PROMOS = new Set(["SALFCARD", "BUSINESS", "БИЗНЕС", "PRO2025"]);
 
+// Флаг последней записи в localStorage: false — если она сорвалась
+// (например, переполнение хранилища). Читается страницами после сохранения.
+export const storageStatus = { ok: true };
+
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
@@ -242,8 +246,10 @@ export const useStore = create<StoreState>()(
               setItem: (key, value) => {
                 try {
                   window.localStorage.setItem(key, value);
+                  storageStatus.ok = true;
                 } catch (e) {
                   // Например, QuotaExceededError при слишком большом изображении.
+                  storageStatus.ok = false;
                   console.warn("Не удалось записать в localStorage:", e);
                 }
               },
