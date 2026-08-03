@@ -192,9 +192,11 @@ function EditMultilink() {
       {/* Управление данными страницы */}
       <SectionCard title="Управление данными страницы">
         <div className="space-y-5">
-          <Field label="Имя Фамилия" required error={errors.name?.message}>
-            <Input placeholder="Иван Петров" {...register("name")} />
-          </Field>
+          {multilink.type === "self" && (
+            <Field label="Имя Фамилия" required error={errors.name?.message}>
+              <Input placeholder="Иван Петров" {...register("name")} />
+            </Field>
+          )}
 
           <div>
             <p className="mb-2 text-sm font-medium text-slate-200">
