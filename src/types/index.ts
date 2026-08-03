@@ -50,6 +50,19 @@ export interface MultilinkSettings {
     actionButton: ActionButton;
     about: string;
   };
+  /** Данные для визитки типа «Офлайн точка» (заведение). */
+  business: BusinessInfo;
+}
+
+export interface BusinessInfo {
+  name: string;
+  hours: string;
+  address: string;
+  wifiName: string;
+  wifiPassword: string;
+  yandexMaps: string;
+  gis2: string;
+  reviewLink: string;
 }
 
 export interface Multilink {

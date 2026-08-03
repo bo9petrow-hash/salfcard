@@ -7,14 +7,19 @@ import {
   AtSign,
   Building2,
   Check,
+  Clock,
   Globe,
   Mail,
+  MapPin,
   MessageCircle,
+  Navigation,
   Phone,
   Play,
   Send,
   Share2,
+  Star,
   UserPlus,
+  Wifi,
   Youtube,
 } from "lucide-react";
 
@@ -22,8 +27,14 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import { useStore } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
-import { buildVCard, cn, downloadFile, normalizeUrl } from "@/lib/utils";
-import type { Multilink } from "@/types";
+import {
+  buildVCard,
+  cn,
+  downloadFile,
+  normalizeSettings,
+  normalizeUrl,
+} from "@/lib/utils";
+import type { Multilink, BusinessInfo } from "@/types";
 
 export default function PreviewPage() {
   const params = useParams<{ id: string }>();
@@ -65,11 +76,19 @@ function CardView({
   multilink: Multilink;
   isBusiness: boolean;
 }) {
-  const s = multilink.settings;
+  const s = normalizeSettings(multilink.settings);
   const c = s.contacts;
+  const b = s.business;
+  const isOffline = multilink.type === "offline";
   const [shared, setShared] = useState(false);
 
-  const displayName = s.name || c.personal.name || multilink.title;
+  const displayName = isOffline
+    ? b?.name || s.name || multilink.title
+    : s.name || c.personal.name || multilink.title;
+
+  const subtitle = isOffline
+    ? b?.address || ""
+    : [c.work.position, c.work.company].filter(Boolean).join(" · ");
 
   // Логотип и фон отображаются только на тарифе «Бизнес».
   const logo = isBusiness ? s.logo : undefined;
@@ -187,11 +206,11 @@ function CardView({
               )}
             </div>
             <h1 className="mt-4 text-xl font-bold text-white drop-shadow">
-              {displayName || "Ваше имя"}
+              {displayName || "Название"}
             </h1>
-            {(c.work.position || c.work.company) && (
+            {subtitle && (
               <p className="mt-1 text-sm text-slate-100/90 drop-shadow">
-                {[c.work.position, c.work.company].filter(Boolean).join(" · ")}
+                {subtitle}
               </p>
             )}
           </div>
@@ -210,6 +229,10 @@ function CardView({
             </a>
           )}
 
+          {isOffline ? (
+            <OfflineSections b={b} />
+          ) : (
+            <>
           {/* Личные контакты */}
           <Section title="Личные контакты">
             <ContactRow
@@ -260,10 +283,12 @@ function CardView({
               ))}
             </Section>
           )}
+            </>
+          )}
 
           {/* Соцсети */}
           {socials.length > 0 && (
-            <Section title="Соцсети и мессенджеры">
+            <Section title={isOffline ? "Мессенджеры" : "Соцсети и мессенджеры"}>
               <div className="grid grid-cols-4 gap-3">
                 {socials.map((soc) => (
                   <a
@@ -285,9 +310,9 @@ function CardView({
             </Section>
           )}
 
-          {/* Обо мне */}
+          {/* Обо мне / О заведении */}
           {c.about && (
-            <Section title="Обо мне">
+            <Section title={isOffline ? "О заведении" : "Обо мне"}>
               <p className="text-sm leading-relaxed text-slate-300">{c.about}</p>
             </Section>
           )}
@@ -366,7 +391,15 @@ function ContactRow({
   );
 }
 
-function LinkButton({ label, href }: { label: string; href: string }) {
+function LinkButton({
+  label,
+  href,
+  icon,
+}: {
+  label: string;
+  href: string;
+  icon?: React.ReactNode;
+}) {
   if (!label) return null;
   return (
     <a
@@ -374,10 +407,82 @@ function LinkButton({ label, href }: { label: string; href: string }) {
       target="_blank"
       rel="noreferrer"
       className={cn(
-        "flex h-11 w-full items-center justify-center rounded-xl border border-white/12 bg-white/5 text-sm font-medium text-white transition-colors hover:border-brand-light"
+        "flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 text-sm font-medium text-white transition-colors hover:border-brand-light"
       )}
     >
+      {icon && <span className="text-brand-light">{icon}</span>}
       {label}
     </a>
+  );
+}
+
+/** Секции визитки-заведения (тип «Офлайн точка»). */
+function OfflineSections({ b }: { b: BusinessInfo }) {
+  return (
+    <>
+      {(b.hours || b.address) && (
+        <Section title="Информация">
+          {b.hours && (
+            <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5">
+              <Clock size={16} className="mt-0.5 shrink-0 text-brand-light" />
+              <span className="whitespace-pre-line text-sm text-slate-100">
+                {b.hours}
+              </span>
+            </div>
+          )}
+          {b.address && <ContactRow icon={<MapPin size={16} />} value={b.address} />}
+        </Section>
+      )}
+
+      {(b.yandexMaps || b.gis2) && (
+        <Section title="Как добраться">
+          {b.yandexMaps && (
+            <LinkButton
+              label="Яндекс.Карты"
+              href={normalizeUrl(b.yandexMaps)}
+              icon={<Navigation size={15} />}
+            />
+          )}
+          {b.gis2 && (
+            <LinkButton
+              label="2ГИС"
+              href={normalizeUrl(b.gis2)}
+              icon={<MapPin size={15} />}
+            />
+          )}
+        </Section>
+      )}
+
+      {(b.wifiName || b.wifiPassword) && (
+        <Section title="Wi-Fi для гостей">
+          <div className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-3">
+            <div className="flex items-center gap-3">
+              <Wifi size={16} className="text-brand-light" />
+              <span className="text-sm text-slate-100">{b.wifiName || "—"}</span>
+            </div>
+            {b.wifiPassword && (
+              <p className="mt-1.5 pl-7 text-sm text-slate-300">
+                Пароль:{" "}
+                <span className="font-semibold text-white">
+                  {b.wifiPassword}
+                </span>
+              </p>
+            )}
+          </div>
+        </Section>
+      )}
+
+      {b.reviewLink && (
+        <a
+          href={normalizeUrl(b.reviewLink)}
+          target="_blank"
+          rel="noreferrer"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 text-sm font-semibold text-white transition-colors hover:border-brand-light"
+        >
+          <Star size={16} className="text-brand-light" />
+          Оставить отзыв
+        </a>
+      )}
+    </>
   );
 }

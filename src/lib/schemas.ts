@@ -65,6 +65,16 @@ export const settingsSchema = z.object({
     }),
     about: z.string().trim(),
   }),
+  business: z.object({
+    name: z.string().trim(),
+    hours: z.string().trim(),
+    address: z.string().trim(),
+    wifiName: z.string().trim(),
+    wifiPassword: z.string().trim(),
+    yandexMaps: z.string().trim(),
+    gis2: z.string().trim(),
+    reviewLink: z.string().trim(),
+  }),
 });
 
 export type SettingsValues = z.infer<typeof settingsSchema>;

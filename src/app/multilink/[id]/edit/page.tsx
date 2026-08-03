@@ -23,7 +23,12 @@ import { Field, Input, Label, Select, Textarea } from "@/components/ui/Field";
 import { settingsSchema, type SettingsValues } from "@/lib/schemas";
 import { useStore, storageStatus } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
-import { createDefaultSettings, compressImageFile, uid } from "@/lib/utils";
+import {
+  createDefaultSettings,
+  compressImageFile,
+  normalizeSettings,
+  uid,
+} from "@/lib/utils";
 import {
   NETWORKING_ACTION_OPTIONS,
   CUSTOM_ACTION_VALUE,
@@ -79,7 +84,7 @@ function EditMultilink() {
   const loadedRef = useRef<string | null>(null);
   useEffect(() => {
     if (hydrated && multilink && loadedRef.current !== multilink.id) {
-      reset(multilink.settings);
+      reset(normalizeSettings(multilink.settings));
       loadedRef.current = multilink.id;
       // Определяем, был ли сохранён «свой вариант» кнопки действия.
       const lbl = multilink.settings.contacts.actionButton.label;
@@ -225,7 +230,9 @@ function EditMultilink() {
         </div>
       </SectionCard>
 
-      {/* Личные контакты */}
+      {multilink.type === "self" ? (
+        <>
+          {/* Личные контакты */}
       <SectionCard title="Личные контакты">
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -328,9 +335,83 @@ function EditMultilink() {
           />
         </div>
       </SectionCard>
+        </>
+      ) : (
+        <>
+          {/* Данные компании */}
+          <SectionCard title="Данные компании">
+            <div className="space-y-4">
+              <Field label="Название компании">
+                <Input
+                  placeholder="Кофейня «Утро»"
+                  {...register("business.name")}
+                />
+              </Field>
+              <Field label="Режим работы" hint="Можно в несколько строк.">
+                <Textarea
+                  placeholder={"Пн–Пт: 8:00–22:00\nСб–Вс: 9:00–23:00"}
+                  {...register("business.hours")}
+                />
+              </Field>
+              <Field label="Адрес">
+                <Input
+                  placeholder="г. Москва, ул. Ленина, 1"
+                  {...register("business.address")}
+                />
+              </Field>
+            </div>
+          </SectionCard>
+
+          {/* Карты и отзывы */}
+          <SectionCard title="Карты и отзывы">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Яндекс.Карты (ссылка)">
+                <Input
+                  placeholder="https://yandex.ru/maps/..."
+                  {...register("business.yandexMaps")}
+                />
+              </Field>
+              <Field label="2ГИС (ссылка)">
+                <Input
+                  placeholder="https://2gis.ru/..."
+                  {...register("business.gis2")}
+                />
+              </Field>
+              <Field label="Ссылка на отзыв" className="sm:col-span-2">
+                <Input
+                  placeholder="Ссылка для отзыва (Яндекс / 2ГИС / Google)"
+                  {...register("business.reviewLink")}
+                />
+              </Field>
+            </div>
+          </SectionCard>
+
+          {/* Wi-Fi */}
+          <SectionCard title="Wi-Fi для гостей">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Название сети (SSID)">
+                <Input
+                  placeholder="Cafe_Guest"
+                  {...register("business.wifiName")}
+                />
+              </Field>
+              <Field label="Пароль">
+                <Input
+                  placeholder="Пароль от Wi-Fi"
+                  {...register("business.wifiPassword")}
+                />
+              </Field>
+            </div>
+          </SectionCard>
+        </>
+      )}
 
       {/* Соцсети и мессенджеры */}
-      <SectionCard title="Соцсети и мессенджеры">
+      <SectionCard
+        title={
+          multilink.type === "offline" ? "Мессенджеры" : "Соцсети и мессенджеры"
+        }
+      >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Telegram (username)">
             <Input
@@ -445,8 +526,8 @@ function EditMultilink() {
       </SectionCard>
 
       {/* Обо мне */}
-      <SectionCard title="Обо мне">
-        <Field label="Пара слов о себе">
+      <SectionCard title={multilink.type === "offline" ? "Описание" : "Обо мне"}>
+        <Field label={multilink.type === "offline" ? "О заведении" : "Пара слов о себе"}>
           <Textarea
             placeholder="Коротко расскажите о себе или своём деле…"
             {...register("contacts.about")}

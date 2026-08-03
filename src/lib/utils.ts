@@ -60,6 +60,41 @@ export function createDefaultSettings(): MultilinkSettings {
       },
       about: "",
     },
+    business: {
+      name: "",
+      hours: "",
+      address: "",
+      wifiName: "",
+      wifiPassword: "",
+      yandexMaps: "",
+      gis2: "",
+      reviewLink: "",
+    },
+  };
+}
+
+/**
+ * Дополняет сохранённые настройки недостающими полями из дефолтов.
+ * Нужно, чтобы старые визитки (без блока business и т.п.) корректно
+ * открывались в редакторе и не «теряли» новые поля.
+ */
+export function normalizeSettings(saved: Partial<MultilinkSettings>): MultilinkSettings {
+  const def = createDefaultSettings();
+  const s: any = saved || {};
+  const c: any = s.contacts || {};
+  return {
+    ...def,
+    ...s,
+    contacts: {
+      ...def.contacts,
+      ...c,
+      personal: { ...def.contacts.personal, ...(c.personal || {}) },
+      work: { ...def.contacts.work, ...(c.work || {}) },
+      social: { ...def.contacts.social, ...(c.social || {}) },
+      actionButton: { ...def.contacts.actionButton, ...(c.actionButton || {}) },
+      about: c.about ?? def.contacts.about,
+    },
+    business: { ...def.business, ...(s.business || {}) },
   };
 }
 
