@@ -7,7 +7,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center py-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex justify-center">
-          <Link href="/" aria-label="SALFCARD">
+          <Link href="/" aria-label="SELFCARD">
             <Logo />
           </Link>
         </div>
@@ -17,7 +17,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <p className="mt-6 text-center text-xs tracking-wide text-slate-500">
-          salfcard.site
+          selfcard.site
         </p>
       </div>
     </div>

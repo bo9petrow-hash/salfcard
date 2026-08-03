@@ -98,7 +98,7 @@ function CreateMultilink() {
             >
               <div className="flex items-stretch overflow-hidden rounded-lg border border-white/12 focus-within:border-brand-light focus-within:ring-2 focus-within:ring-brand-blue/25">
                 <span className="flex select-none items-center whitespace-nowrap border-r border-white/12 bg-night-900/50 px-3 text-sm text-slate-400">
-                  salfcard.ru/p/
+                  selfcard.ru/p/
                 </span>
                 <input
                   placeholder="ваш-адрес"

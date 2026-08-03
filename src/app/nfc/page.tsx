@@ -68,7 +68,7 @@ function NfcManager() {
       return;
     }
 
-    const url = `https://salfcard.ru/p/${ml.slug}`;
+    const url = `https://selfcard.ru/p/${ml.slug}`;
     setBusyId(deviceId);
     setFeedback(null);
 
@@ -202,7 +202,7 @@ function NfcManager() {
                           <option value="">— не выбрано —</option>
                           {multilinks.map((m) => (
                             <option key={m.id} value={m.id}>
-                              {m.title} (salfcard.ru/p/{m.slug})
+                              {m.title} (selfcard.ru/p/{m.slug})
                             </option>
                           ))}
                         </Select>

@@ -179,7 +179,7 @@ function Dashboard() {
                   <Input
                     value={promo}
                     onChange={(e) => setPromo(e.target.value)}
-                    placeholder="Например, SALFCARD"
+                    placeholder="Например, SELFCARD"
                     className="pl-9"
                     onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
                   />
@@ -265,7 +265,7 @@ function Dashboard() {
                       {m.title}
                     </p>
                     <p className="truncate text-xs text-slate-400">
-                      salfcard.ru/p/{m.slug}
+                      selfcard.ru/p/{m.slug}
                     </p>
                   </div>
                   <div className="flex items-center gap-1">

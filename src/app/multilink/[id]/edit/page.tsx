@@ -169,7 +169,7 @@ function EditMultilink() {
         <div>
           <h1 className="text-2xl font-bold text-white">Настройки</h1>
           <p className="mt-1 text-sm text-slate-400">
-            {multilink.title} · salfcard.ru/p/{multilink.slug}
+            {multilink.title} · selfcard.ru/p/{multilink.slug}
           </p>
         </div>
         <div className="flex gap-2">

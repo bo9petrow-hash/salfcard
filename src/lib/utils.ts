@@ -14,7 +14,7 @@ export function uid(): string {
   );
 }
 
-/** Случайный короткий slug для ссылки вида salfcard.ru/p/<slug>. */
+/** Случайный короткий slug для ссылки вида selfcard.ru/p/<slug>. */
 export function generateSlug(length = 6): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let out = "";

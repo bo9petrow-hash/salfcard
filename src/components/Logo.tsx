@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Фирменный знак SALFCARD: градиентная плитка-карта с NFC-волнами. */
+/** Фирменный знак SELFCARD: градиентная плитка-карта с NFC-волнами. */
 export function Logo({
   className,
   showText = true,
@@ -30,7 +30,7 @@ export function Logo({
       </span>
       {showText && (
         <span className="text-lg font-bold tracking-tight text-white">
-          SALFCARD
+          SELFCARD
         </span>
       )}
     </span>

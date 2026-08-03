@@ -22,8 +22,8 @@ const MENU_ITEMS = [
   { label: "Настройки", href: "/settings", icon: Settings, external: false },
   { label: "NFC-носители", href: "/nfc", icon: Nfc, external: false },
   {
-    label: "Сайт salfcard.ru",
-    href: "https://salfcard.ru",
+    label: "Сайт selfcard.ru",
+    href: "https://selfcard.ru",
     icon: Globe,
     external: true,
   },
