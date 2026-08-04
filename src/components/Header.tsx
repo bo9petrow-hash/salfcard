@@ -16,6 +16,7 @@ import {
 import { Logo } from "@/components/Logo";
 import { useStore } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
+import { useAuth } from "@/components/AuthProvider";
 
 const MENU_ITEMS = [
   { label: "Личный кабинет", href: "/profile", icon: UserIcon, external: false },
@@ -42,11 +43,15 @@ export function Header() {
   const pathname = usePathname();
   const hydrated = useHydrated();
   const logout = useStore((s) => s.logout);
-  const isAuthenticated = useStore((s) => s.isAuthenticated);
+  const { email, signOut } = useAuth();
+  const isAuthenticated = Boolean(email);
   const avatar = useStore((s) => s.user.avatar);
 
-  // На экранах входа и регистрации шапка приложения не нужна.
-  const isAuthPage = pathname === "/login" || pathname === "/register";
+  // На экранах входа/регистрации и на публичной визитке шапка не нужна.
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname.startsWith("/p/");
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -58,7 +63,8 @@ export function Header() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut();
     logout();
     setOpen(false);
     router.push("/login");

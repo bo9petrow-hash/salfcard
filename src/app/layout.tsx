@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { StarsBackground } from "@/components/StarsBackground";
+import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
   title: "SELFCARD — панель управления",
@@ -26,10 +27,12 @@ export default function RootLayout({
     <html lang="ru">
       <body className="min-h-screen font-sans">
         <StarsBackground />
-        <Header />
-        <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6 sm:px-6">
-          {children}
-        </main>
+        <AuthProvider>
+          <Header />
+          <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6 sm:px-6">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -27,11 +27,15 @@ interface Account {
 interface StoreState {
   user: User;
 
-  // Аутентификация
+  // Аутентификация (несколько аккаунтов в одном браузере)
   isAuthenticated: boolean;
-  account: Account | null;
+  accounts: Account[];
+  currentEmail: string | null;
+  usersByEmail: Record<string, User>;
   register: (email: string, password: string) => { ok: boolean; message: string };
   login: (email: string, password: string) => { ok: boolean; message: string };
+  // Загрузка данных аккаунта по email (используется с авторизацией Supabase).
+  setActiveAccount: (email: string) => void;
 
   // Профиль
   setName: (name: string) => void;
@@ -68,6 +72,35 @@ const initialUser: User = {
   nfcDevices: [],
 };
 
+/** Новый пустой пользователь для только что зарегистрированного аккаунта. */
+const freshUser = (email: string): User => ({
+  name: "",
+  email,
+  tariff: "Базовый",
+  multilinks: [],
+  redirects: [],
+  nfcDevices: [],
+});
+
+/** Приводит данные пользователя к корректной форме (массивы, старые поля). */
+const normalizeUser = (u: any): User => ({
+  name: typeof u?.name === "string" ? u.name : "",
+  email: u?.email,
+  avatar: u?.avatar,
+  tariff: u?.tariff === "Бизнес" ? "Бизнес" : "Базовый",
+  multilinks: Array.isArray(u?.multilinks) ? u.multilinks : [],
+  redirects: Array.isArray(u?.redirects) ? u.redirects : [],
+  nfcDevices: Array.isArray(u?.nfcDevices)
+    ? u.nfcDevices
+    : Array.isArray(u?.nfcProducts)
+    ? u.nfcProducts.map((x: any) => ({
+        id: x.id,
+        name: x.name,
+        status: "inactive" as const,
+      }))
+    : [],
+});
+
 // Промокоды-заглушки: любой из них повышает тариф до «Бизнес».
 const BUSINESS_PROMOS = new Set(["SELFCARD", "BUSINESS", "БИЗНЕС", "PRO2025"]);
 
@@ -81,29 +114,68 @@ export const useStore = create<StoreState>()(
       user: initialUser,
 
       isAuthenticated: false,
-      account: null,
+      accounts: [],
+      currentEmail: null,
+      usersByEmail: {},
 
       register: (email, password) => {
         const clean = email.trim().toLowerCase();
-        set((state) => ({
-          account: { email: clean, password },
-          isAuthenticated: true,
-          user: { ...state.user, email: clean },
-        }));
+        if (!clean) return { ok: false, message: "Введите email" };
+        const state = get();
+        if (state.accounts.some((a) => a.email === clean)) {
+          return {
+            ok: false,
+            message: "Пользователь с таким email уже зарегистрирован. Войдите.",
+          };
+        }
+        set((s) => {
+          // Сохраняем данные активного аккаунта перед переключением.
+          const usersByEmail = { ...s.usersByEmail };
+          if (s.currentEmail) usersByEmail[s.currentEmail] = s.user;
+          const newUser = freshUser(clean);
+          usersByEmail[clean] = newUser;
+          return {
+            accounts: [...s.accounts, { email: clean, password }],
+            usersByEmail,
+            user: newUser,
+            currentEmail: clean,
+            isAuthenticated: true,
+          };
+        });
         return { ok: true, message: "Регистрация завершена" };
       },
 
       login: (email, password) => {
         const clean = email.trim().toLowerCase();
-        const acc = get().account;
-        // Если аккаунт уже зарегистрирован — проверяем совпадение.
-        if (acc && (acc.email !== clean || acc.password !== password)) {
-          return { ok: false, message: "Неверный email или пароль" };
+        const state = get();
+        const acc = state.accounts.find((a) => a.email === clean);
+        if (!acc) {
+          return {
+            ok: false,
+            message: "Пользователь не найден. Сначала зарегистрируйтесь.",
+          };
         }
-        set((state) => ({
-          isAuthenticated: true,
-          user: { ...state.user, email: clean },
-        }));
+        if (acc.password !== password) {
+          return { ok: false, message: "Неверный пароль." };
+        }
+        set((s) => {
+          // Тот же аккаунт уже активен — данные не трогаем.
+          if (s.currentEmail === clean) {
+            return { isAuthenticated: true };
+          }
+          // Переключение: сохраняем текущего, загружаем данные нужного аккаунта.
+          const usersByEmail = { ...s.usersByEmail };
+          if (s.currentEmail) usersByEmail[s.currentEmail] = s.user;
+          const nextUser = usersByEmail[clean]
+            ? normalizeUser(usersByEmail[clean])
+            : freshUser(clean);
+          return {
+            usersByEmail,
+            user: nextUser,
+            currentEmail: clean,
+            isAuthenticated: true,
+          };
+        });
         return { ok: true, message: "Вход выполнен" };
       },
 
@@ -112,6 +184,19 @@ export const useStore = create<StoreState>()(
 
       setAvatar: (avatar) =>
         set((state) => ({ user: { ...state.user, avatar } })),
+
+      setActiveAccount: (email) => {
+        const clean = email.trim().toLowerCase();
+        set((s) => {
+          if (s.currentEmail === clean) return {};
+          const usersByEmail = { ...s.usersByEmail };
+          if (s.currentEmail) usersByEmail[s.currentEmail] = s.user;
+          const nextUser = usersByEmail[clean]
+            ? normalizeUser(usersByEmail[clean])
+            : freshUser(clean);
+          return { usersByEmail, user: nextUser, currentEmail: clean };
+        });
+      },
 
       applyPromo: (code) => {
         const clean = code.trim().toUpperCase();
@@ -232,8 +317,13 @@ export const useStore = create<StoreState>()(
           },
         })),
 
-      // Сбрасываем данные текущей сессии, но сохраняем аккаунт для повторного входа.
-      logout: () => set({ user: initialUser, isAuthenticated: false }),
+      // Сохраняем данные активного аккаунта и выходим (данные не теряются).
+      logout: () =>
+        set((s) => {
+          const usersByEmail = { ...s.usersByEmail };
+          if (s.currentEmail) usersByEmail[s.currentEmail] = s.user;
+          return { usersByEmail, isAuthenticated: false };
+        }),
     }),
     {
       name: "salfcard-store",
@@ -261,31 +351,41 @@ export const useStore = create<StoreState>()(
               removeItem: () => {},
             }
       ),
-      // Совместимость со старыми сохранениями: нормализуем форму user,
-      // переносим nfcProducts -> nfcDevices и гарантируем наличие массивов.
+      // Совместимость со старыми сохранениями: нормализуем активного пользователя
+      // и переводим единственный account в список accounts + usersByEmail.
       merge: (persisted, current) => {
+        const cur = current as StoreState;
         const p = persisted as any;
-        if (!p || !p.user) return current as StoreState;
-        const pu = p.user;
-        const nfcDevices = Array.isArray(pu.nfcDevices)
-          ? pu.nfcDevices
-          : Array.isArray(pu.nfcProducts)
-          ? pu.nfcProducts.map((x: any) => ({
-              id: x.id,
-              name: x.name,
-              status: "inactive" as const,
-            }))
+        if (!p) return cur;
+
+        const user = p.user ? normalizeUser(p.user) : cur.user;
+
+        // Аккаунты: новый формат (accounts) или старый (account).
+        const accounts = Array.isArray(p.accounts)
+          ? p.accounts
+          : p.account
+          ? [p.account]
           : [];
+
+        const currentEmail =
+          p.currentEmail ?? user.email ?? (p.account ? p.account.email : null) ?? null;
+
+        const usersByEmail =
+          p.usersByEmail && typeof p.usersByEmail === "object"
+            ? { ...p.usersByEmail }
+            : {};
+
+        // Активный аккаунт всегда представлен свежими данными user.
+        if (currentEmail) usersByEmail[currentEmail] = user;
+
         return {
-          ...(current as StoreState),
+          ...cur,
           ...p,
-          user: {
-            ...(current as StoreState).user,
-            ...pu,
-            multilinks: Array.isArray(pu.multilinks) ? pu.multilinks : [],
-            redirects: Array.isArray(pu.redirects) ? pu.redirects : [],
-            nfcDevices,
-          },
+          user,
+          accounts,
+          currentEmail,
+          usersByEmail,
+          isAuthenticated: Boolean(p.isAuthenticated),
         } as StoreState;
       },
     }

@@ -13,10 +13,12 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { loginSchema, type LoginValues } from "@/lib/schemas";
 import { useStore } from "@/store/useStore";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const login = useStore((s) => s.login);
+  const { signIn } = useAuth();
+  const setActiveAccount = useStore((s) => s.setActiveAccount);
 
   const [captcha, setCaptcha] = useState(false);
   const [formError, setFormError] = useState("");
@@ -31,10 +33,11 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = (values: LoginValues) => {
+  const onSubmit = async (values: LoginValues) => {
     setFormError("");
-    const result = login(values.email, values.password);
+    const result = await signIn(values.email, values.password);
     if (result.ok) {
+      setActiveAccount(values.email.trim().toLowerCase());
       router.push("/");
     } else {
       setFormError(result.message);

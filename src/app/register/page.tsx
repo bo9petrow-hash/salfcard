@@ -13,10 +13,12 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { registerSchema, type RegisterValues } from "@/lib/schemas";
 import { useStore } from "@/store/useStore";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const registerAccount = useStore((s) => s.register);
+  const { signUp } = useAuth();
+  const setActiveAccount = useStore((s) => s.setActiveAccount);
 
   const [captcha, setCaptcha] = useState(false);
   const [formError, setFormError] = useState("");
@@ -30,10 +32,11 @@ export default function RegisterPage() {
     defaultValues: { email: "", password: "", confirmPassword: "" },
   });
 
-  const onSubmit = (values: RegisterValues) => {
+  const onSubmit = async (values: RegisterValues) => {
     setFormError("");
-    const result = registerAccount(values.email, values.password);
+    const result = await signUp(values.email, values.password);
     if (result.ok) {
+      setActiveAccount(values.email.trim().toLowerCase());
       router.push("/");
     } else {
       setFormError(result.message);

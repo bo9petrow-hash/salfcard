@@ -45,7 +45,7 @@ function makeStars(count: number): Star[] {
   return stars;
 }
 
-const STARS = makeStars(110);
+const STARS = makeStars(80);
 
 export function StarsBackground() {
   return (

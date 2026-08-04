@@ -9,6 +9,8 @@ import {
   ArrowLeft,
   Check,
   Eye,
+  Globe,
+  Loader2,
   Lock,
   Plus,
   Save,
@@ -56,6 +58,12 @@ function EditMultilink() {
   const isBusiness = tariff === "Бизнес";
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const [publishMsg, setPublishMsg] = useState<{
+    ok: boolean;
+    text: string;
+    url?: string;
+  } | null>(null);
   const [customAction, setCustomAction] = useState(false);
 
   const {
@@ -126,6 +134,40 @@ function EditMultilink() {
   const openPreview = () => {
     persist(getValues());
     router.push(`/preview/${id}`);
+  };
+
+  // Публикация визитки в базу — после этого она открывается по ссылке у любого.
+  const publish = async () => {
+    if (!multilink) return;
+    const values = getValues();
+    persist(values);
+    setPublishing(true);
+    setPublishMsg(null);
+    try {
+      const res = await fetch("/api/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug: multilink.slug,
+          type: multilink.type,
+          data: values,
+        }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        const url = `${window.location.origin}/p/${multilink.slug}`;
+        setPublishMsg({ ok: true, text: "Опубликовано!", url });
+      } else {
+        setPublishMsg({
+          ok: false,
+          text: json.error || "Не удалось опубликовать.",
+        });
+      }
+    } catch {
+      setPublishMsg({ ok: false, text: "Ошибка сети. Попробуйте ещё раз." });
+    } finally {
+      setPublishing(false);
+    }
   };
 
   if (!hydrated) {
@@ -544,6 +586,31 @@ function EditMultilink() {
             {saveError}
           </p>
         )}
+        {publishMsg && (
+          <div
+            className={
+              publishMsg.ok
+                ? "mb-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200"
+                : "mb-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300"
+            }
+          >
+            {publishMsg.text}
+            {publishMsg.ok && publishMsg.url && (
+              <>
+                {" "}
+                Ссылка:{" "}
+                <a
+                  href={publishMsg.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-white underline break-all"
+                >
+                  {publishMsg.url}
+                </a>
+              </>
+            )}
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-end gap-2">
           {saved && (
             <span className="mr-auto inline-flex items-center gap-1.5 text-sm text-brand-light">
@@ -554,6 +621,14 @@ function EditMultilink() {
           <Button type="button" variant="secondary" onClick={openPreview}>
             <Eye size={16} />
             Просмотреть страницу
+          </Button>
+          <Button type="button" onClick={publish} disabled={publishing}>
+            {publishing ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Globe size={16} />
+            )}
+            Опубликовать
           </Button>
           <Button type="submit">
             <Save size={16} />
@@ -629,6 +704,7 @@ function UploadField({
           <img
             src={value}
             alt={label}
+            decoding="async"
             className={
               preview === "logo"
                 ? "mx-auto h-20 w-20 object-contain py-2"
