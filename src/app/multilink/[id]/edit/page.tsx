@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 
 import { AuthGuard } from "@/components/AuthGuard";
+import { useAuth } from "@/components/AuthProvider";
+import { saveCard } from "@/lib/cards";
 import { SectionCard } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/Field";
@@ -54,6 +56,7 @@ function EditMultilink() {
   const multilink = useStore((s) => s.user.multilinks.find((m) => m.id === id));
   const tariff = useStore((s) => s.user.tariff);
   const updateMultilink = useStore((s) => s.updateMultilink);
+  const { userId } = useAuth();
 
   const isBusiness = tariff === "Бизнес";
   const [saved, setSaved] = useState(false);
@@ -114,10 +117,10 @@ function EditMultilink() {
     updateMultilink(id, values as MultilinkSettings);
   };
 
-  // Сохранение всегда берёт актуальные значения формы и пишет их в Zustand
-  // (и через persist — в localStorage), не блокируясь валидацией.
-  const saveNow = () => {
-    persist(getValues());
+  // Сохранение: пишем в Zustand (localStorage) и в базу (публичная визитка).
+  const saveNow = async () => {
+    const values = getValues();
+    persist(values);
     if (!storageStatus.ok) {
       setSaved(false);
       setSaveError(
@@ -128,46 +131,34 @@ function EditMultilink() {
     setSaveError("");
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
+
+    // Запись в базу — чтобы визитка обновилась по публичной ссылке.
+    if (multilink && userId) {
+      setPublishing(true);
+      setPublishMsg(null);
+      try {
+        await saveCard(userId, {
+          slug: multilink.slug,
+          type: multilink.type,
+          data: values as MultilinkSettings,
+        });
+        const url = `${window.location.origin}/p/${multilink.slug}`;
+        setPublishMsg({ ok: true, text: "Сохранено и опубликовано.", url });
+      } catch {
+        setPublishMsg({
+          ok: false,
+          text: "Сохранено локально, но не удалось обновить в базе. Проверьте соединение.",
+        });
+      } finally {
+        setPublishing(false);
+      }
+    }
   };
 
   // Сохраняем и открываем превью в этой же вкладке (надёжно на мобильных).
   const openPreview = () => {
     persist(getValues());
     router.push(`/preview/${id}`);
-  };
-
-  // Публикация визитки в базу — после этого она открывается по ссылке у любого.
-  const publish = async () => {
-    if (!multilink) return;
-    const values = getValues();
-    persist(values);
-    setPublishing(true);
-    setPublishMsg(null);
-    try {
-      const res = await fetch("/api/publish", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: multilink.slug,
-          type: multilink.type,
-          data: values,
-        }),
-      });
-      const json = await res.json();
-      if (json.ok) {
-        const url = `${window.location.origin}/p/${multilink.slug}`;
-        setPublishMsg({ ok: true, text: "Опубликовано!", url });
-      } else {
-        setPublishMsg({
-          ok: false,
-          text: json.error || "Не удалось опубликовать.",
-        });
-      }
-    } catch {
-      setPublishMsg({ ok: false, text: "Ошибка сети. Попробуйте ещё раз." });
-    } finally {
-      setPublishing(false);
-    }
   };
 
   if (!hydrated) {
@@ -622,16 +613,12 @@ function EditMultilink() {
             <Eye size={16} />
             Просмотреть страницу
           </Button>
-          <Button type="button" onClick={publish} disabled={publishing}>
+          <Button type="submit" disabled={publishing}>
             {publishing ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
-              <Globe size={16} />
+              <Save size={16} />
             )}
-            Опубликовать
-          </Button>
-          <Button type="submit">
-            <Save size={16} />
             Сохранить
           </Button>
         </div>

@@ -16,6 +16,7 @@ interface AuthResult {
 
 interface AuthState {
   email: string | null;
+  userId: string | null;
   loading: boolean;
   configured: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
@@ -49,6 +50,7 @@ function translateError(message: string): string {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = useMemo(() => getSupabaseBrowser(), []);
   const [email, setEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,10 +62,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       if (!mounted) return;
       setEmail(data.session?.user?.email ?? null);
+      setUserId(data.session?.user?.id ?? null);
       setLoading(false);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setEmail(session?.user?.email ?? null);
+      setUserId(session?.user?.id ?? null);
     });
     return () => {
       mounted = false;
@@ -104,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value: AuthState = {
     email,
+    userId,
     loading,
     configured: Boolean(supabase),
     signIn,
@@ -120,6 +125,7 @@ export function useAuth(): AuthState {
     // На случай использования вне провайдера — безопасная заглушка.
     return {
       email: null,
+      userId: null,
       loading: false,
       configured: false,
       signIn: async () => ({ ok: false, message: "Авторизация недоступна." }),

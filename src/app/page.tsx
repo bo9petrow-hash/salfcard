@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { useStore } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
+import { useAuth } from "@/components/AuthProvider";
+import { fetchMyCards, saveCard, deleteCard } from "@/lib/cards";
 import { TARIFF_LIMITS } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -38,13 +40,56 @@ export default function DashboardPage() {
 function Dashboard() {
   const hydrated = useHydrated();
   const user = useStore((s) => s.user);
+  const { userId } = useAuth();
   const applyPromo = useStore((s) => s.applyPromo);
   const setName = useStore((s) => s.setName);
+  const setMultilinks = useStore((s) => s.setMultilinks);
   const deleteMultilink = useStore((s) => s.deleteMultilink);
   const addRedirect = useStore((s) => s.addRedirect);
   const deleteRedirect = useStore((s) => s.deleteRedirect);
   const addNfcDevice = useStore((s) => s.addNfcDevice);
   const deleteNfcDevice = useStore((s) => s.deleteNfcDevice);
+
+  // Синхронизация карт с базой: заливаем локальные, затем берём из базы.
+  const syncedRef = useRef(false);
+  useEffect(() => {
+    if (!hydrated || !userId || syncedRef.current) return;
+    syncedRef.current = true;
+    (async () => {
+      try {
+        const local = useStore.getState().user.multilinks;
+        for (const m of local) {
+          try {
+            await saveCard(userId, {
+              slug: m.slug,
+              type: m.type,
+              data: m.settings,
+            });
+          } catch {
+            /* пропускаем отдельную карту */
+          }
+        }
+        const dbCards = await fetchMyCards(userId);
+        const dbSlugs = new Set(dbCards.map((c) => c.slug));
+        const merged = [
+          ...dbCards,
+          ...local.filter((m) => !dbSlugs.has(m.slug)),
+        ];
+        setMultilinks(merged);
+      } catch {
+        /* база недоступна — работаем на локальных данных */
+      }
+    })();
+  }, [hydrated, userId, setMultilinks]);
+
+  const handleDeleteMultilink = async (slug: string, id: string) => {
+    try {
+      await deleteCard(slug);
+    } catch {
+      /* если в базе нет — не страшно */
+    }
+    deleteMultilink(id);
+  };
 
   const [promo, setPromo] = useState("");
   const [promoMsg, setPromoMsg] = useState<{ ok: boolean; text: string } | null>(
@@ -283,7 +328,7 @@ function Dashboard() {
                       variant="ghost"
                       size="sm"
                       aria-label="Удалить"
-                      onClick={() => deleteMultilink(m.id)}
+                      onClick={() => handleDeleteMultilink(m.slug, m.id)}
                     >
                       <Trash2 size={16} />
                     </Button>

@@ -50,6 +50,8 @@ interface StoreState {
   updateMultilink: (id: string, settings: MultilinkSettings) => void;
   deleteMultilink: (id: string) => void;
   getMultilink: (id: string) => Multilink | undefined;
+  // Полная замена списка карт (после загрузки из базы).
+  setMultilinks: (multilinks: Multilink[]) => void;
 
   // Переадресации
   addRedirect: (title: string, url: string) => void;
@@ -268,6 +270,11 @@ export const useStore = create<StoreState>()(
         })),
 
       getMultilink: (id) => get().user.multilinks.find((m) => m.id === id),
+
+      setMultilinks: (multilinks) =>
+        set((state) => ({
+          user: { ...state.user, multilinks },
+        })),
 
       addRedirect: (title, url) => {
         const redirect: Redirect = { id: uid(), title, url };

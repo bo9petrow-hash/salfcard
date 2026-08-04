@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Building2, Check, User as UserIcon } from "lucide-react";
 
 import { AuthGuard } from "@/components/AuthGuard";
+import { useAuth } from "@/components/AuthProvider";
+import { saveCard } from "@/lib/cards";
 import { SectionCard } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/Field";
@@ -29,6 +31,8 @@ export default function CreateMultilinkPage() {
 function CreateMultilink() {
   const router = useRouter();
   const createMultilink = useStore((s) => s.createMultilink);
+  const getMultilink = useStore((s) => s.getMultilink);
+  const { userId } = useAuth();
 
   const {
     register,
@@ -48,13 +52,26 @@ function CreateMultilink() {
 
   const type = watch("type");
 
-  const onSubmit = (values: CreateMultilinkValues) => {
+  const onSubmit = async (values: CreateMultilinkValues) => {
     const id = createMultilink({
       title: values.title,
       slug: values.slug || undefined,
       language: values.language,
       type: values.type,
     });
+    // Сразу заводим карту в базе, чтобы она была доступна на всех устройствах.
+    const created = getMultilink(id);
+    if (created && userId) {
+      try {
+        await saveCard(userId, {
+          slug: created.slug,
+          type: created.type,
+          data: created.settings,
+        });
+      } catch {
+        /* не удалось — появится в базе при первом сохранении */
+      }
+    }
     router.push(`/multilink/${id}/edit`);
   };
 
