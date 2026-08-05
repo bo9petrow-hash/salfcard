@@ -334,6 +334,13 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "salfcard-store",
+      // Карты теперь в базе — не держим их (и снимки аккаунтов) в localStorage,
+      // иначе тяжёлые картинки переполняют хранилище браузера.
+      partialize: (state) => ({
+        ...state,
+        usersByEmail: {},
+        user: { ...state.user, multilinks: [] },
+      }),
       // Безопасное хранилище: на сервере (SSR) не обращаемся к localStorage,
       // а запись оборачиваем в try/catch, чтобы переполнение не роняло приложение.
       storage: createJSONStorage(() =>
