@@ -40,6 +40,14 @@ interface StoreState {
   // Профиль
   setName: (name: string) => void;
   setAvatar: (avatar: string | undefined) => void;
+  // Применение профиля, загруженного из базы.
+  applyProfile: (profile: {
+    name?: string;
+    avatar?: string;
+    tariff?: Tariff;
+    redirects?: Redirect[];
+    nfcDevices?: NfcDevice[];
+  }) => void;
 
   // Промокоды и тариф
   applyPromo: (code: string) => { ok: boolean; message: string };
@@ -186,6 +194,27 @@ export const useStore = create<StoreState>()(
 
       setAvatar: (avatar) =>
         set((state) => ({ user: { ...state.user, avatar } })),
+
+      applyProfile: (profile) =>
+        set((state) => ({
+          user: {
+            ...state.user,
+            name: profile.name ?? state.user.name,
+            avatar: profile.avatar ?? state.user.avatar,
+            tariff:
+              profile.tariff === "Бизнес"
+                ? "Бизнес"
+                : profile.tariff === "Базовый"
+                ? "Базовый"
+                : state.user.tariff,
+            redirects: Array.isArray(profile.redirects)
+              ? profile.redirects
+              : state.user.redirects,
+            nfcDevices: Array.isArray(profile.nfcDevices)
+              ? profile.nfcDevices
+              : state.user.nfcDevices,
+          },
+        })),
 
       setActiveAccount: (email) => {
         const clean = email.trim().toLowerCase();
