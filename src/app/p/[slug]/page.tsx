@@ -1,4 +1,5 @@
 import { CardVisual } from "@/components/CardVisual";
+import { ViewCounter } from "@/components/ViewCounter";
 import { getSupabasePublic } from "@/lib/supabase";
 import type { Multilink } from "@/types";
 
@@ -46,6 +47,7 @@ export default async function PublicCardPage({
 
   return (
     <div className="py-2">
+      <ViewCounter slug={row.slug} />
       <CardVisual multilink={multilink} isBusiness />
     </div>
   );

@@ -72,6 +72,7 @@ export interface Multilink {
   language: string;
   type: MultilinkType;
   settings: MultilinkSettings;
+  views?: number;
 }
 
 export interface Redirect {

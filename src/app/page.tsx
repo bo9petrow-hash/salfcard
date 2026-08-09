@@ -310,7 +310,10 @@ function Dashboard() {
                       {m.title}
                     </p>
                     <p className="truncate text-xs text-slate-400">
-                      selfcard.ru/p/{m.slug}
+                      selfcards.ru/p/{m.slug}
+                    </p>
+                    <p className="mt-0.5 text-xs text-brand-light">
+                      Просмотров: {m.views ?? 0}
                     </p>
                   </div>
                   <div className="flex items-center gap-1">
