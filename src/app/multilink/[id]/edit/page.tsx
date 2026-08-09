@@ -443,8 +443,8 @@ function EditMultilink() {
           <SectionCard title="Меню и оплата">
             <div className="space-y-4">
               <Field
-                label="Меню (ссылка или PDF)"
-                hint="Ссылка на меню: сайт, PDF, Яндекс.Еда и т.п."
+                label="Меню (ссылка)"
+                hint="Ссылка на меню: сайт, файл PDF, Яндекс.Еда и т.п."
               >
                 <Input
                   placeholder="https://..."
@@ -452,8 +452,8 @@ function EditMultilink() {
                 />
               </Field>
               <Field
-                label="Оплата / чаевые (ссылка)"
-                hint="Ссылка на оплату: СБП, ЮMoney, Т-Банк, чаевые и т.п."
+                label="Оплата (ссылка)"
+                hint="Ссылка на оплату: СБП, ЮMoney, Т-Банк и т.п."
               >
                 <Input
                   placeholder="https://..."
