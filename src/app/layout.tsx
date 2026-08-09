@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     siteName: "SELFCARDS",
     type: "website",
   },
+  verification: {
+    yandex: "272ef14fce5643b7",
+  },
 };
 
 export const viewport: Viewport = {
