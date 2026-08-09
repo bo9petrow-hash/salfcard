@@ -6,11 +6,13 @@ import {
   ArrowUpRight,
   Check,
   ExternalLink,
+  Eye,
   Link2,
   Nfc,
   Pencil,
   PlayCircle,
   Plus,
+  QrCode,
   Repeat,
   Settings2,
   Ticket,
@@ -20,6 +22,7 @@ import {
 
 import { AuthGuard } from "@/components/AuthGuard";
 import { SectionCard, Modal } from "@/components/ui/Card";
+import { QrModal } from "@/components/QrModal";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { useStore } from "@/store/useStore";
@@ -104,6 +107,10 @@ function Dashboard() {
 
   const [nfcOpen, setNfcOpen] = useState(false);
   const [nfcName, setNfcName] = useState("");
+
+  const [qrCard, setQrCard] = useState<{ slug: string; title: string } | null>(
+    null
+  );
 
   const limit = TARIFF_LIMITS[user.tariff];
   const usageLabel = limit === Infinity ? "∞" : String(limit);
@@ -301,30 +308,48 @@ function Dashboard() {
           <ul className="space-y-2">
             {user.multilinks.map((m) => (
               <li key={m.id}>
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:border-white/20">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand-gradient text-white">
-                    <Link2 size={18} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">
-                      {m.title}
-                    </p>
-                    <p className="truncate text-xs text-slate-400">
-                      selfcards.ru/p/{m.slug}
-                    </p>
-                    <p className="mt-0.5 text-xs text-brand-light">
-                      Просмотров: {m.views ?? 0}
-                    </p>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20">
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-gradient text-white">
+                      <Link2 size={18} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-white">
+                        {m.title}
+                      </p>
+                      <p className="truncate text-xs text-slate-400">
+                        selfcards.ru/p/{m.slug}
+                      </p>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/10 px-2 py-1 text-xs font-medium text-brand-light">
+                      <Eye size={13} />
+                      {m.views ?? 0}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1">
+
+                  <div className="mt-3 flex items-center gap-2">
+                    <Link
+                      href={`/multilink/${m.id}/edit`}
+                      className="flex-1"
+                    >
+                      <Button variant="secondary" size="sm" className="w-full">
+                        <Settings2 size={15} />
+                        Настроить
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label="QR-код"
+                      onClick={() =>
+                        setQrCard({ slug: m.slug, title: m.title })
+                      }
+                    >
+                      <QrCode size={16} />
+                    </Button>
                     <Link href={`/preview/${m.id}`} target="_blank">
                       <Button variant="ghost" size="sm" aria-label="Просмотр">
                         <ExternalLink size={16} />
-                      </Button>
-                    </Link>
-                    <Link href={`/multilink/${m.id}/edit`}>
-                      <Button variant="secondary" size="sm">
-                        Настроить
                       </Button>
                     </Link>
                     <Button
@@ -517,6 +542,14 @@ function Dashboard() {
           </div>
         </div>
       </Modal>
+
+      {/* Модалка QR-кода */}
+      <QrModal
+        open={qrCard !== null}
+        onClose={() => setQrCard(null)}
+        url={qrCard ? `https://selfcards.ru/p/${qrCard.slug}` : ""}
+        title={qrCard?.title}
+      />
     </div>
   );
 }
