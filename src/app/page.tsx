@@ -53,7 +53,9 @@ function Dashboard() {
   const addNfcDevice = useStore((s) => s.addNfcDevice);
   const deleteNfcDevice = useStore((s) => s.deleteNfcDevice);
 
-  // Синхронизация карт с базой: заливаем локальные, затем берём из базы.
+  // Синхронизация карт с базой. База — источник правды: сначала берём карты
+  // из базы, а вверх заливаем только те локальные, которых в базе ещё нет
+  // (чтобы устаревшая локальная копия не перезаписала свежую версию из базы).
   const syncedRef = useRef(false);
   useEffect(() => {
     if (!hydrated || !userId || syncedRef.current) return;
@@ -61,7 +63,10 @@ function Dashboard() {
     (async () => {
       try {
         const local = useStore.getState().user.multilinks;
-        for (const m of local) {
+        const dbCards = await fetchMyCards(userId);
+        const dbSlugs = new Set(dbCards.map((c) => c.slug));
+        const localOnly = local.filter((m) => !dbSlugs.has(m.slug));
+        for (const m of localOnly) {
           try {
             await saveCard(userId, {
               slug: m.slug,
@@ -72,13 +77,7 @@ function Dashboard() {
             /* пропускаем отдельную карту */
           }
         }
-        const dbCards = await fetchMyCards(userId);
-        const dbSlugs = new Set(dbCards.map((c) => c.slug));
-        const merged = [
-          ...dbCards,
-          ...local.filter((m) => !dbSlugs.has(m.slug)),
-        ];
-        setMultilinks(merged);
+        setMultilinks([...dbCards, ...localOnly]);
       } catch {
         /* база недоступна — работаем на локальных данных */
       }
@@ -231,7 +230,7 @@ function Dashboard() {
                   <Input
                     value={promo}
                     onChange={(e) => setPromo(e.target.value)}
-                    placeholder="Например, SELFCARD"
+                    placeholder="Например, SELFCARDS"
                     className="pl-9"
                     onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
                   />
@@ -347,8 +346,8 @@ function Dashboard() {
                     >
                       <QrCode size={16} />
                     </Button>
-                    <Link href={`/preview/${m.id}`} target="_blank">
-                      <Button variant="ghost" size="sm" aria-label="Просмотр">
+                    <Link href={`/p/${m.slug}`} target="_blank">
+                      <Button variant="ghost" size="sm" aria-label="Открыть визитку">
                         <ExternalLink size={16} />
                       </Button>
                     </Link>

@@ -1,254 +1,170 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Check, ImagePlus, Trash2, UserRound } from "lucide-react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
 
-import { AuthGuard } from "@/components/AuthGuard";
-import { SectionCard } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Field, Input } from "@/components/ui/Field";
-import { useStore, storageStatus } from "@/store/useStore";
-import { useHydrated } from "@/hooks/useHydrated";
-import { compressImageFile, cn } from "@/lib/utils";
-import type { Tariff } from "@/types";
-
-export default function ProfilePage() {
-  return (
-    <AuthGuard>
-      <Profile />
-    </AuthGuard>
-  );
+interface AuthResult {
+  ok: boolean;
+  message: string;
 }
 
-function Profile() {
-  const hydrated = useHydrated();
-  const user = useStore((s) => s.user);
-  const setName = useStore((s) => s.setName);
-  const setAvatar = useStore((s) => s.setAvatar);
-  const setTariff = useStore((s) => s.setTariff);
+interface AuthState {
+  email: string | null;
+  userId: string | null;
+  loading: boolean;
+  configured: boolean;
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string) => Promise<AuthResult>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
+}
 
-  const [nameDraft, setNameDraft] = useState(user.name || "");
-  const [saved, setSaved] = useState(false);
-  const [avatarError, setAvatarError] = useState("");
-  const fileRef = useRef<HTMLInputElement>(null);
+const AuthContext = createContext<AuthState | null>(null);
 
-  const isBusiness = user.tariff === "Бизнес";
+// Перевод типовых ошибок Supabase на русский.
+function translateError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials")) {
+    return "Неверный email или пароль. Если аккаунта нет — зарегистрируйтесь.";
+  }
+  if (m.includes("user already registered")) {
+    return "Пользователь с таким email уже зарегистрирован. Войдите.";
+  }
+  if (m.includes("password should be at least")) {
+    return "Пароль должен быть не менее 6 символов.";
+  }
+  if (m.includes("unable to validate email") || m.includes("invalid email")) {
+    return "Некорректный email.";
+  }
+  if (m.includes("email not confirmed")) {
+    return "Email не подтверждён.";
+  }
+  return message;
+}
 
-  const onPickAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setAvatarError("");
-    try {
-      const dataUrl = await compressImageFile(file, {
-        maxDimension: 256,
-        mime: "image/jpeg",
-        quality: 0.8,
-        maxBytes: 110_000,
-      });
-      setAvatar(dataUrl);
-      if (!storageStatus.ok) {
-        setAvatarError(
-          "Не удалось сохранить: хранилище браузера переполнено. Очистите данные сайта в браузере и попробуйте снова."
-        );
-      }
-    } catch (err: any) {
-      setAvatarError(err?.message || "Не удалось загрузить изображение.");
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const supabase = useMemo(() => getSupabaseBrowser(), []);
+  const [email, setEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
     }
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      setEmail(data.session?.user?.email ?? null);
+      setUserId(data.session?.user?.id ?? null);
+      setLoading(false);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setEmail(session?.user?.email ?? null);
+      setUserId(session?.user?.id ?? null);
+    });
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  const signIn = async (em: string, password: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: "Авторизация недоступна." };
+    const { error } = await supabase.auth.signInWithPassword({
+      email: em.trim().toLowerCase(),
+      password,
+    });
+    if (error) return { ok: false, message: translateError(error.message) };
+    return { ok: true, message: "" };
   };
 
-  const handleSave = () => {
-    setName(nameDraft);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const signUp = async (em: string, password: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: "Авторизация недоступна." };
+    const { data, error } = await supabase.auth.signUp({
+      email: em.trim().toLowerCase(),
+      password,
+    });
+    if (error) return { ok: false, message: translateError(error.message) };
+    // Если включено подтверждение email — сессии не будет.
+    if (!data.session) {
+      return {
+        ok: false,
+        message: "Подтвердите email по ссылке в письме, затем войдите.",
+      };
+    }
+    return { ok: true, message: "" };
   };
 
-  const chooseTariff = (t: Tariff) => setTariff(t);
+  const signOut = async () => {
+    if (supabase) await supabase.auth.signOut();
+  };
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Личный кабинет</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Управляйте профилем, тарифом и аватаром.
-        </p>
-      </div>
+  const resetPassword = async (em: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: "Авторизация недоступна." };
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/reset-password`
+        : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      em.trim().toLowerCase(),
+      { redirectTo }
+    );
+    if (error) return { ok: false, message: translateError(error.message) };
+    return { ok: true, message: "" };
+  };
 
-      {/* Профиль */}
-      <SectionCard title="Профиль">
-        <div className="space-y-5">
-          {/* Аватар */}
-          <div className="flex items-center gap-4">
-            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
-              {hydrated && user.avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.avatar}
-                  alt="Аватар"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-slate-500">
-                  <UserRound size={30} />
-                </div>
-              )}
-            </div>
-            <div className="space-y-2">
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => fileRef.current?.click()}
-                >
-                  <ImagePlus size={15} />
-                  Загрузить аватар
-                </Button>
-                {hydrated && user.avatar && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setAvatar(undefined)}
-                  >
-                    <Trash2 size={15} />
-                    Убрать
-                  </Button>
-                )}
-              </div>
-              <p className="text-xs text-slate-400">
-                {isBusiness
-                  ? "Аватар отображается на вашей визитке."
-                  : "На визитке аватар доступен в тарифе «Бизнес»."}
-              </p>
-              {avatarError && (
-                <p className="text-xs text-red-400">{avatarError}</p>
-              )}
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={onPickAvatar}
-              />
-            </div>
-          </div>
+  const updatePassword = async (password: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: "Авторизация недоступна." };
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return { ok: false, message: translateError(error.message) };
+    return { ok: true, message: "" };
+  };
 
-          {/* Email */}
-          <Field label="Email" hint="Используется для входа в систему.">
-            <Input
-              value={hydrated ? user.email || "" : ""}
-              readOnly
-              disabled
-              placeholder="—"
-            />
-          </Field>
+  const value: AuthState = {
+    email,
+    userId,
+    loading,
+    configured: Boolean(supabase),
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+    updatePassword,
+  };
 
-          {/* Имя */}
-          <Field
-            label="Имя"
-            hint="Отображается в приветствии на главной странице."
-          >
-            <Input
-              value={nameDraft}
-              onChange={(e) => setNameDraft(e.target.value)}
-              placeholder="Например, Иван"
-            />
-          </Field>
-
-          <div className="flex items-center gap-3">
-            <Button onClick={handleSave}>
-              <Check size={16} />
-              Сохранить
-            </Button>
-            {saved && (
-              <span className="flex items-center gap-1 text-sm text-brand-light">
-                <Check size={15} />
-                Сохранено
-              </span>
-            )}
-          </div>
-        </div>
-      </SectionCard>
-
-      {/* Тариф */}
-      <SectionCard
-        title="Тариф"
-        description="Переключение доступных возможностей."
-      >
-        <div className="grid gap-3 sm:grid-cols-2">
-          <TariffOption
-            title="Базовый"
-            features={["До 2 мультиссылок", "Базовые блоки визитки"]}
-            active={hydrated && user.tariff === "Базовый"}
-            onClick={() => chooseTariff("Базовый")}
-          />
-          <TariffOption
-            title="Бизнес"
-            features={[
-              "Безлимит мультиссылок",
-              "Логотип и фон визитки",
-              "Аватар на визитке",
-            ]}
-            active={hydrated && user.tariff === "Бизнес"}
-            onClick={() => chooseTariff("Бизнес")}
-            highlight
-          />
-        </div>
-        <p className="mt-3 text-xs text-slate-400">
-          В демо-версии тариф переключается вручную. Промокод на главной
-          активирует «Бизнес» автоматически.
-        </p>
-      </SectionCard>
-    </div>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-function TariffOption({
-  title,
-  features,
-  active,
-  highlight,
-  onClick,
-}: {
-  title: string;
-  features: string[];
-  active: boolean;
-  highlight?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "rounded-xl border p-4 text-left transition-colors",
-        active
-          ? "border-brand-light bg-brand-blue/10 shadow-glow"
-          : "border-white/10 bg-white/5 hover:border-white/25"
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-white">{title}</span>
-        {active ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-brand-gradient px-2.5 py-0.5 text-[11px] font-semibold text-white">
-            <Check size={12} />
-            Активен
-          </span>
-        ) : (
-          highlight && (
-            <span className="rounded-full border border-white/15 px-2.5 py-0.5 text-[11px] text-slate-300">
-              Рекомендуем
-            </span>
-          )
-        )}
-      </div>
-      <ul className="mt-2 space-y-1">
-        {features.map((f) => (
-          <li key={f} className="flex items-center gap-1.5 text-xs text-slate-300">
-            <Check size={13} className="text-brand-light" />
-            {f}
-          </li>
-        ))}
-      </ul>
-    </button>
-  );
+export function useAuth(): AuthState {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    // На случай использования вне провайдера — безопасная заглушка.
+    return {
+      email: null,
+      userId: null,
+      loading: false,
+      configured: false,
+      signIn: async () => ({ ok: false, message: "Авторизация недоступна." }),
+      signUp: async () => ({ ok: false, message: "Авторизация недоступна." }),
+      signOut: async () => {},
+      resetPassword: async () => ({
+        ok: false,
+        message: "Авторизация недоступна.",
+      }),
+      updatePassword: async () => ({
+        ok: false,
+        message: "Авторизация недоступна.",
+      }),
+    };
+  }
+  return ctx;
 }

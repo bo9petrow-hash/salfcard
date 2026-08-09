@@ -1,60 +1,50 @@
-import { NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase";
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import { Header } from "@/components/Header";
+import { StarsBackground } from "@/components/StarsBackground";
+import { AuthProvider } from "@/components/AuthProvider";
+import { ProfileSync } from "@/components/ProfileSync";
 
-export const runtime = "nodejs";
+export const metadata: Metadata = {
+  metadataBase: new URL("https://selfcards.ru"),
+  title: "SELFCARDS — NFC-визитки",
+  description:
+    "Умные NFC-визитки SELFCARDS: одним касанием делитесь контактами, ссылками и соцсетями. Визитки для людей и заведений.",
+  openGraph: {
+    title: "SELFCARDS — NFC-визитки",
+    description:
+      "Одним касанием — все ваши контакты и ссылки. Визитки для людей и заведений.",
+    url: "https://selfcards.ru",
+    siteName: "SELFCARDS",
+    type: "website",
+  },
+};
 
-/**
- * POST /api/publish
- * Тело: { slug, type, data }
- * Сохраняет (создаёт или обновляет по slug) визитку в таблице cards.
- * Запись выполняется на сервере секретным ключом — из браузера писать нельзя.
- */
-export async function POST(request: Request) {
-  const admin = getSupabaseAdmin();
-  if (!admin) {
-    return NextResponse.json(
-      { ok: false, error: "База данных не настроена." },
-      { status: 500 }
-    );
-  }
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#0B0F1E",
+};
 
-  let body: any;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json(
-      { ok: false, error: "Некорректные данные." },
-      { status: 400 }
-    );
-  }
-
-  const slug = String(body?.slug || "").trim();
-  const type = body?.type === "offline" ? "offline" : "self";
-  const data = body?.data ?? {};
-
-  if (!slug) {
-    return NextResponse.json(
-      { ok: false, error: "Пустой адрес визитки (slug)." },
-      { status: 400 }
-    );
-  }
-
-  const { error } = await admin.from("cards").upsert(
-    {
-      slug,
-      type,
-      data,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "slug" }
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="ru">
+      <body className="min-h-screen font-sans">
+        <StarsBackground />
+        <AuthProvider>
+          <ProfileSync />
+          <Header />
+          <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6 sm:px-6">
+            {children}
+          </main>
+        </AuthProvider>
+      </body>
+    </html>
   );
-
-  if (error) {
-    return NextResponse.json(
-      { ok: false, error: error.message },
-      { status: 500 }
-    );
-  }
-
-  return NextResponse.json({ ok: true, slug });
 }

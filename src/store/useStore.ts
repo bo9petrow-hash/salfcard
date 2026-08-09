@@ -112,7 +112,7 @@ const normalizeUser = (u: any): User => ({
 });
 
 // Промокоды-заглушки: любой из них повышает тариф до «Бизнес».
-const BUSINESS_PROMOS = new Set(["SELFCARD", "BUSINESS", "БИЗНЕС", "PRO2025"]);
+const BUSINESS_PROMOS = new Set(["SELFCARDS", "SELFCARD", "BUSINESS", "БИЗНЕС", "PRO2025"]);
 
 // Флаг последней записи в localStorage: false — если она сорвалась
 // (например, переполнение хранилища). Читается страницами после сохранения.

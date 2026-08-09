@@ -313,7 +313,7 @@ export function CardVisual({
           {/* Футер */}
           <div className="flex items-center justify-center gap-1.5 border-t border-white/10 pt-5 text-xs text-slate-400">
             <Logo showText className="scale-90" />
-            <span>· selfcards.ru</span>
+            <span>· selfcard.site</span>
           </div>
         </div>
       </div>

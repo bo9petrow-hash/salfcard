@@ -23,14 +23,14 @@ const MENU_ITEMS = [
   { label: "Настройки", href: "/settings", icon: Settings, external: false },
   { label: "NFC-носители", href: "/nfc", icon: Nfc, external: false },
   {
-    label: "Сайт selfcard.ru",
-    href: "https://selfcard.ru",
+    label: "Сайт selfcards.ru",
+    href: "https://selfcards.ru",
     icon: Globe,
     external: true,
   },
   {
-    label: "Телеграм-канал @salfcard",
-    href: "https://t.me/salfcard",
+    label: "Телеграм-канал",
+    href: "https://t.me/selfcard011",
     icon: Send,
     external: true,
   },
