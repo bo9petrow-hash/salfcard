@@ -63,6 +63,8 @@ export interface BusinessInfo {
   yandexMaps: string;
   gis2: string;
   reviewLink: string;
+  menu: string;
+  payment: string;
 }
 
 export interface Multilink {

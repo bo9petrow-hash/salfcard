@@ -5,6 +5,7 @@ interface CardRow {
   slug: string;
   type: string;
   data: any;
+  views?: number;
 }
 
 /** Преобразует строку из базы в объект мультиссылки для приложения. */
@@ -17,6 +18,7 @@ export function rowToMultilink(row: CardRow): Multilink {
     language: "",
     type: (row.type === "offline" ? "offline" : "self") as MultilinkType,
     settings: data as MultilinkSettings,
+    views: typeof row.views === "number" ? row.views : 0,
   };
 }
 
@@ -26,7 +28,7 @@ export async function fetchMyCards(userId: string): Promise<Multilink[]> {
   if (!supabase || !userId) return [];
   const { data, error } = await supabase
     .from("cards")
-    .select("slug, type, data")
+    .select("slug, type, data, views")
     .eq("owner_id", userId)
     .order("created_at", { ascending: true });
   if (error) throw error;
@@ -59,4 +61,11 @@ export async function deleteCard(slug: string): Promise<void> {
   if (!supabase) throw new Error("Supabase не настроен");
   const { error } = await supabase.from("cards").delete().eq("slug", slug);
   if (error) throw error;
+}
+
+/** Засчитывает открытие визитки (+1 к счётчику просмотров). */
+export async function incrementCardViews(slug: string): Promise<void> {
+  const supabase = getSupabaseBrowser();
+  if (!supabase) return;
+  await supabase.rpc("increment_card_views", { card_slug: slug });
 }

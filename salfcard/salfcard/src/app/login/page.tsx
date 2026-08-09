@@ -17,16 +17,18 @@ import { useAuth } from "@/components/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn, resetPassword } = useAuth();
   const setActiveAccount = useStore((s) => s.setActiveAccount);
 
   const [captcha, setCaptcha] = useState(false);
   const [formError, setFormError] = useState("");
-  const [showReset, setShowReset] = useState(false);
+  const [resetMsg, setResetMsg] = useState("");
+  const [resetSending, setResetSending] = useState(false);
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -41,6 +43,25 @@ export default function LoginPage() {
       router.push("/");
     } else {
       setFormError(result.message);
+    }
+  };
+
+  const handleReset = async () => {
+    const email = getValues("email").trim();
+    setResetMsg("");
+    if (!email) {
+      setResetMsg("Введите email в поле выше, затем нажмите «Забыли пароль?».");
+      return;
+    }
+    setResetSending(true);
+    const result = await resetPassword(email);
+    setResetSending(false);
+    if (result.ok) {
+      setResetMsg(
+        `Если аккаунт с адресом ${email} существует, мы отправили на него письмо со ссылкой для сброса пароля. Проверьте почту (и папку «Спам»).`
+      );
+    } else {
+      setResetMsg(result.message);
     }
   };
 
@@ -90,10 +111,11 @@ export default function LoginPage() {
       <div className="mt-5 flex items-center justify-between text-sm">
         <button
           type="button"
-          onClick={() => setShowReset((v) => !v)}
-          className="text-slate-400 underline-offset-2 hover:text-white hover:underline"
+          onClick={handleReset}
+          disabled={resetSending}
+          className="text-slate-400 underline-offset-2 hover:text-white hover:underline disabled:opacity-60"
         >
-          Забыли пароль?
+          {resetSending ? "Отправляем…" : "Забыли пароль?"}
         </button>
         <Link
           href="/register"
@@ -103,10 +125,9 @@ export default function LoginPage() {
         </Link>
       </div>
 
-      {showReset && (
+      {resetMsg && (
         <p className="mt-3 rounded-lg bg-white/5 px-3 py-2 text-xs text-slate-300">
-          Восстановление пароля скоро будет доступно. Напишите в поддержку —
-          Телеграм @salfcard.
+          {resetMsg}
         </p>
       )}
     </AuthShell>

@@ -63,6 +63,8 @@ export interface BusinessInfo {
   yandexMaps: string;
   gis2: string;
   reviewLink: string;
+  menu: string;
+  payment: string;
 }
 
 export interface Multilink {
@@ -72,6 +74,7 @@ export interface Multilink {
   language: string;
   type: MultilinkType;
   settings: MultilinkSettings;
+  views?: number;
 }
 
 export interface Redirect {

@@ -74,6 +74,8 @@ export const settingsSchema = z.object({
     yandexMaps: z.string().trim(),
     gis2: z.string().trim(),
     reviewLink: z.string().trim(),
+    menu: z.string().trim(),
+    payment: z.string().trim(),
   }),
 });
 

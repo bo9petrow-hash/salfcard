@@ -4,9 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   AtSign,
+  BookOpen,
   Building2,
   Check,
   Clock,
+  CreditCard,
   Globe,
   Mail,
   MapPin,
@@ -401,6 +403,34 @@ function LinkButton({
 function OfflineSections({ b }: { b: BusinessInfo }) {
   return (
     <>
+      {/* Ключевые кнопки заведения */}
+      {(b.menu || b.payment) && (
+        <div className="space-y-2">
+          {b.menu && (
+            <a
+              href={normalizeUrl(b.menu)}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-grad flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold"
+            >
+              <BookOpen size={17} />
+              Меню
+            </a>
+          )}
+          {b.payment && (
+            <a
+              href={normalizeUrl(b.payment)}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 text-sm font-semibold text-white transition-colors hover:border-brand-light"
+            >
+              <CreditCard size={17} className="text-brand-light" />
+              Оплата
+            </a>
+          )}
+        </div>
+      )}
+
       {(b.hours || b.address) && (
         <Section title="Информация">
           {b.hours && (

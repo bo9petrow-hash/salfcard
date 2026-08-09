@@ -6,9 +6,18 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { ProfileSync } from "@/components/ProfileSync";
 
 export const metadata: Metadata = {
-  title: "SELFCARD — панель управления",
+  metadataBase: new URL("https://selfcards.ru"),
+  title: "SELFCARDS — NFC-визитки",
   description:
-    "Платформа NFC-визиток SELFCARD: мультиссылки, переадресация и NFC-носители.",
+    "Умные NFC-визитки SELFCARDS: одним касанием делитесь контактами, ссылками и соцсетями. Визитки для людей и заведений.",
+  openGraph: {
+    title: "SELFCARDS — NFC-визитки",
+    description:
+      "Одним касанием — все ваши контакты и ссылки. Визитки для людей и заведений.",
+    url: "https://selfcards.ru",
+    siteName: "SELFCARDS",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

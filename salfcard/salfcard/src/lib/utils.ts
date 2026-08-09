@@ -69,6 +69,8 @@ export function createDefaultSettings(): MultilinkSettings {
       yandexMaps: "",
       gis2: "",
       reviewLink: "",
+      menu: "",
+      payment: "",
     },
   };
 }

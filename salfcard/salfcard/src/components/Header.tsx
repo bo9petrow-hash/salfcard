@@ -51,6 +51,7 @@ export function Header() {
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/register" ||
+    pathname === "/reset-password" ||
     pathname.startsWith("/p/");
 
   useEffect(() => {

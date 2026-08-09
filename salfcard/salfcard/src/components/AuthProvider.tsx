@@ -22,6 +22,8 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -106,6 +108,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (supabase) await supabase.auth.signOut();
   };
 
+  const resetPassword = async (em: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: "Авторизация недоступна." };
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/reset-password`
+        : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      em.trim().toLowerCase(),
+      { redirectTo }
+    );
+    if (error) return { ok: false, message: translateError(error.message) };
+    return { ok: true, message: "" };
+  };
+
+  const updatePassword = async (password: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: "Авторизация недоступна." };
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return { ok: false, message: translateError(error.message) };
+    return { ok: true, message: "" };
+  };
+
   const value: AuthState = {
     email,
     userId,
@@ -114,6 +137,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signOut,
+    resetPassword,
+    updatePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -131,6 +156,14 @@ export function useAuth(): AuthState {
       signIn: async () => ({ ok: false, message: "Авторизация недоступна." }),
       signUp: async () => ({ ok: false, message: "Авторизация недоступна." }),
       signOut: async () => {},
+      resetPassword: async () => ({
+        ok: false,
+        message: "Авторизация недоступна.",
+      }),
+      updatePassword: async () => ({
+        ok: false,
+        message: "Авторизация недоступна.",
+      }),
     };
   }
   return ctx;
