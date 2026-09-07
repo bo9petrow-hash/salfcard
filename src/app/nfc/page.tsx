@@ -224,7 +224,10 @@ function NfcManager() {
                       <Button
                         variant="ghost"
                         aria-label="Удалить"
-                        onClick={() => deleteNfcDevice(device.id)}
+                        onClick={() => {
+                          if (window.confirm("Отвязать это NFC-устройство?"))
+                            deleteNfcDevice(device.id);
+                        }}
                       >
                         <Trash2 size={16} />
                       </Button>

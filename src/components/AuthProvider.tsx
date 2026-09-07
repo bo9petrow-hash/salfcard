@@ -12,6 +12,8 @@ import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
 interface AuthResult {
   ok: boolean;
   message: string;
+  /** Информационное сообщение (не ошибка), например требование подтвердить email. */
+  info?: boolean;
 }
 
 interface AuthState {
@@ -94,10 +96,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
     });
     if (error) return { ok: false, message: translateError(error.message) };
-    // Если включено подтверждение email — сессии не будет.
+    // Если включено подтверждение email — сессии не будет. Это не ошибка,
+    // а информационное сообщение (регистрация прошла, нужно подтвердить email).
     if (!data.session) {
       return {
         ok: false,
+        info: true,
         message: "Подтвердите email по ссылке в письме, затем войдите.",
       };
     }

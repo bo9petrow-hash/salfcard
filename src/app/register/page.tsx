@@ -22,6 +22,7 @@ export default function RegisterPage() {
 
   const [captcha, setCaptcha] = useState(false);
   const [formError, setFormError] = useState("");
+  const [formInfo, setFormInfo] = useState("");
 
   const {
     register,
@@ -34,10 +35,15 @@ export default function RegisterPage() {
 
   const onSubmit = async (values: RegisterValues) => {
     setFormError("");
+    setFormInfo("");
     const result = await signUp(values.email, values.password);
     if (result.ok) {
       setActiveAccount(values.email.trim().toLowerCase());
       router.push("/");
+    } else if (result.info) {
+      // Информационный случай (например, требуется подтверждение email) —
+      // показываем нейтральным стилем, а не как ошибку.
+      setFormInfo(result.message);
     } else {
       setFormError(result.message);
     }
@@ -94,6 +100,11 @@ export default function RegisterPage() {
         <SmartCaptcha checked={captcha} onChange={setCaptcha} />
 
         {formError && <p className="text-sm text-red-400">{formError}</p>}
+        {formInfo && (
+          <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">
+            {formInfo}
+          </p>
+        )}
 
         <Button
           type="submit"

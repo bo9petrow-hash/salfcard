@@ -6,9 +6,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Building2, Check, User as UserIcon } from "lucide-react";
 
+import { useState } from "react";
+
 import { AuthGuard } from "@/components/AuthGuard";
 import { useAuth } from "@/components/AuthProvider";
-import { saveCard } from "@/lib/cards";
+import { saveCard, isSlugTaken } from "@/lib/cards";
 import { SectionCard } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/Field";
@@ -17,8 +19,8 @@ import {
   type CreateMultilinkValues,
 } from "@/lib/schemas";
 import { useStore } from "@/store/useStore";
-import { LANGUAGES } from "@/types";
-import { cn } from "@/lib/utils";
+import { LANGUAGES, TARIFF_LIMITS } from "@/types";
+import { cn, generateSlug } from "@/lib/utils";
 
 export default function CreateMultilinkPage() {
   return (
@@ -32,7 +34,10 @@ function CreateMultilink() {
   const router = useRouter();
   const createMultilink = useStore((s) => s.createMultilink);
   const getMultilink = useStore((s) => s.getMultilink);
+  const user = useStore((s) => s.user);
   const { userId } = useAuth();
+
+  const [submitError, setSubmitError] = useState("");
 
   const {
     register,
@@ -53,12 +58,53 @@ function CreateMultilink() {
   const type = watch("type");
 
   const onSubmit = async (values: CreateMultilinkValues) => {
+    setSubmitError("");
+
+    // Клиентская проверка лимита тарифа: прямой переход на /multilink/create
+    // не должен обходить лимит (кнопка на дашборде лишь отключается).
+    const limit = TARIFF_LIMITS[user.tariff];
+    if (user.multilinks.length >= limit) {
+      setSubmitError("Достигнут лимит визиток для вашего тарифа");
+      return;
+    }
+
+    // Определяем итоговый slug: пользовательский проверяем на занятость,
+    // автоматический генерируем и повторяем при коллизии.
+    let slug = (values.slug || "").trim();
+    if (slug) {
+      try {
+        if (await isSlugTaken(slug)) {
+          setSubmitError("Этот адрес уже занят, выберите другой");
+          return;
+        }
+      } catch {
+        /* база недоступна — пропускаем проверку занятости */
+      }
+    } else {
+      slug = generateSlug();
+      try {
+        let attempt = 0;
+        while ((await isSlugTaken(slug)) && attempt < 5) {
+          slug = generateSlug();
+          attempt += 1;
+        }
+      } catch {
+        /* база недоступна — используем сгенерированный slug */
+      }
+    }
+
     const id = createMultilink({
       title: values.title,
-      slug: values.slug || undefined,
+      slug,
       language: values.language,
       type: values.type,
     });
+    // Пустой id — стор отказал (лимит тарифа); подстраховка на случай обхода.
+    if (!id) {
+      setSubmitError("Достигнут лимит визиток для вашего тарифа");
+      return;
+    }
+
     // Сразу заводим карту в базе, чтобы она была доступна на всех устройствах.
     const created = getMultilink(id);
     if (created && userId) {
@@ -68,8 +114,14 @@ function CreateMultilink() {
           type: created.type,
           data: created.settings,
         });
-      } catch {
-        /* не удалось — появится в базе при первом сохранении */
+      } catch (e: any) {
+        // Ошибку показываем пользователю, а не проглатываем.
+        setSubmitError(
+          e?.message
+            ? `Не удалось сохранить визитку в базе: ${e.message}`
+            : "Не удалось сохранить визитку в базе. Проверьте соединение и попробуйте снова."
+        );
+        return;
       }
     }
     router.push(`/multilink/${id}/edit`);
@@ -157,6 +209,12 @@ function CreateMultilink() {
             </div>
           </div>
         </SectionCard>
+
+        {submitError && (
+          <p className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            {submitError}
+          </p>
+        )}
 
         <div className="mt-5 flex justify-end gap-2">
           <Link href="/">

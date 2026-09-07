@@ -10,6 +10,7 @@ import type {
   Tariff,
   User,
 } from "@/types";
+import { TARIFF_LIMITS } from "@/types";
 import { createDefaultSettings, generateSlug, uid } from "@/lib/utils";
 
 interface CreateMultilinkInput {
@@ -250,6 +251,15 @@ export const useStore = create<StoreState>()(
         set((state) => ({ user: { ...state.user, tariff } })),
 
       createMultilink: (input) => {
+        // Клиентская проверка лимита тарифа: отказываем в создании при
+        // достижении лимита, возвращая пустую строку. ВНИМАНИЕ: настоящая
+        // защита должна дублироваться на сервере/через RLS — клиент обходим.
+        const state = get();
+        const limit = TARIFF_LIMITS[state.user.tariff];
+        if (state.user.multilinks.length >= limit) {
+          return "";
+        }
+
         const id = uid();
         const slug =
           input.slug && input.slug.length > 0 ? input.slug : generateSlug();

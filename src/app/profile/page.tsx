@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, ImagePlus, Trash2, UserRound } from "lucide-react";
 
 import { AuthGuard } from "@/components/AuthGuard";
@@ -29,6 +29,12 @@ function Profile() {
 
   const [nameDraft, setNameDraft] = useState(user.name || "");
   const [saved, setSaved] = useState(false);
+
+  // ProfileSync подгружает имя из базы асинхронно уже после монтирования.
+  // Синхронизируем черновик, но не затираем то, что пользователь уже вводит.
+  useEffect(() => {
+    setNameDraft((prev) => (prev ? prev : user.name || ""));
+  }, [user.name]);
   const [avatarError, setAvatarError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 

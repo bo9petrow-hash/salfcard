@@ -85,6 +85,7 @@ function Dashboard() {
   }, [hydrated, userId, setMultilinks]);
 
   const handleDeleteMultilink = async (slug: string, id: string) => {
+    if (!window.confirm("Удалить визитку? Это действие необратимо.")) return;
     try {
       await deleteCard(slug);
     } catch {
@@ -406,7 +407,10 @@ function Dashboard() {
                     variant="ghost"
                     size="sm"
                     aria-label="Удалить"
-                    onClick={() => deleteRedirect(r.id)}
+                    onClick={() => {
+                      if (window.confirm("Удалить переадресацию?"))
+                        deleteRedirect(r.id);
+                    }}
                   >
                     <Trash2 size={16} />
                   </Button>
@@ -463,7 +467,10 @@ function Dashboard() {
                     variant="ghost"
                     size="sm"
                     aria-label="Удалить"
-                    onClick={() => deleteNfcDevice(n.id)}
+                    onClick={() => {
+                      if (window.confirm("Отвязать это NFC-устройство?"))
+                        deleteNfcDevice(n.id);
+                    }}
                   >
                     <Trash2 size={16} />
                   </Button>

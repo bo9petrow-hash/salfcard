@@ -25,7 +25,7 @@ import { SectionCard } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/Field";
 import { settingsSchema, type SettingsValues } from "@/lib/schemas";
-import { useStore, storageStatus } from "@/store/useStore";
+import { useStore } from "@/store/useStore";
 import { useHydrated } from "@/hooks/useHydrated";
 import {
   createDefaultSettings,
@@ -60,7 +60,6 @@ function EditMultilink() {
 
   const isBusiness = tariff === "Бизнес";
   const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [publishMsg, setPublishMsg] = useState<{
     ok: boolean;
@@ -98,7 +97,7 @@ function EditMultilink() {
       reset(normalizeSettings(multilink.settings));
       loadedRef.current = multilink.id;
       // Определяем, был ли сохранён «свой вариант» кнопки действия.
-      const lbl = multilink.settings.contacts.actionButton.label;
+      const lbl = multilink.settings?.contacts?.actionButton?.label;
       setCustomAction(
         multilink.type === "self" &&
           !!lbl &&
@@ -121,14 +120,6 @@ function EditMultilink() {
   const saveNow = async () => {
     const values = getValues();
     persist(values);
-    if (!storageStatus.ok) {
-      setSaved(false);
-      setSaveError(
-        "Не удалось сохранить: хранилище браузера переполнено. Уберите фон или логотип полегче, либо очистите данные сайта в браузере."
-      );
-      return;
-    }
-    setSaveError("");
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
 
@@ -596,11 +587,6 @@ function EditMultilink() {
 
       {/* Нижние кнопки */}
       <div className="pb-2">
-        {saveError && (
-          <p className="mb-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300">
-            {saveError}
-          </p>
-        )}
         {publishMsg && (
           <div
             className={

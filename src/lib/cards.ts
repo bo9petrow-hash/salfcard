@@ -55,6 +55,19 @@ export async function saveCard(
   if (error) throw error;
 }
 
+/** Проверяет, занят ли slug (адрес визитки) в базе. */
+export async function isSlugTaken(slug: string): Promise<boolean> {
+  const supabase = getSupabaseBrowser();
+  if (!supabase || !slug) return false;
+  const { data, error } = await supabase
+    .from("cards")
+    .select("slug")
+    .eq("slug", slug)
+    .limit(1);
+  if (error) throw error;
+  return (data ?? []).length > 0;
+}
+
 /** Удаляет карту по slug (база разрешает только владельцу). */
 export async function deleteCard(slug: string): Promise<void> {
   const supabase = getSupabaseBrowser();

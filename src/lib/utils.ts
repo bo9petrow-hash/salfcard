@@ -100,6 +100,18 @@ export function normalizeSettings(saved: Partial<MultilinkSettings>): MultilinkS
   };
 }
 
+/**
+ * Экранирование значения для vCard (RFC 6350):
+ * обратный слэш, запятая и точка с запятой экранируются, перевод строки → \n.
+ */
+function escapeVCard(value: string): string {
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\r\n|\r|\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
+}
+
 /** Формирование vCard (.vcf) из данных визитки — «Сохранить в контакты». */
 export function buildVCard(ml: Multilink): string {
   const s = ml.settings;
@@ -107,16 +119,17 @@ export function buildVCard(ml: Multilink): string {
   const w = s.contacts.work;
   const fullName = s.name || p.name || ml.title || "Контакт";
 
-  const lines: string[] = ["BEGIN:VCARD", "VERSION:3.0", `FN:${fullName}`];
+  const e = escapeVCard;
+  const lines: string[] = ["BEGIN:VCARD", "VERSION:3.0", `FN:${e(fullName)}`];
 
-  if (w.company) lines.push(`ORG:${w.company}`);
-  if (w.position) lines.push(`TITLE:${w.position}`);
-  if (p.phone) lines.push(`TEL;TYPE=CELL:${p.phone}`);
-  if (w.phone) lines.push(`TEL;TYPE=WORK:${w.phone}`);
-  if (p.email) lines.push(`EMAIL;TYPE=HOME:${p.email}`);
-  if (w.email) lines.push(`EMAIL;TYPE=WORK:${w.email}`);
-  if (p.website) lines.push(`URL:${p.website}`);
-  if (s.contacts.about) lines.push(`NOTE:${s.contacts.about}`);
+  if (w.company) lines.push(`ORG:${e(w.company)}`);
+  if (w.position) lines.push(`TITLE:${e(w.position)}`);
+  if (p.phone) lines.push(`TEL;TYPE=CELL:${e(p.phone)}`);
+  if (w.phone) lines.push(`TEL;TYPE=WORK:${e(w.phone)}`);
+  if (p.email) lines.push(`EMAIL;TYPE=HOME:${e(p.email)}`);
+  if (w.email) lines.push(`EMAIL;TYPE=WORK:${e(w.email)}`);
+  if (p.website) lines.push(`URL:${e(p.website)}`);
+  if (s.contacts.about) lines.push(`NOTE:${e(s.contacts.about)}`);
 
   lines.push("END:VCARD");
   return lines.join("\r\n");
@@ -140,6 +153,30 @@ export function normalizeUrl(value: string): string {
   if (!value) return "";
   if (/^https?:\/\//i.test(value)) return value;
   return `https://${value}`;
+}
+
+/**
+ * Ссылка для кнопки действия. По названию/пресету и виду значения выбирает
+ * подходящую схему: телефон (tel:) для «Позвонить», почту (mailto:) для
+ * «Написать на почту» или значения с «@». В остальных случаях — обычный URL.
+ */
+export function actionButtonHref(label: string, value: string): string {
+  const v = (value || "").trim();
+  if (!v) return "";
+  const l = (label || "").toLowerCase();
+  const looksPhone = /^[+\d][\d\s()-]{4,}$/.test(v);
+  const looksEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+  if ((l.includes("позвонить") || l.includes("звонок")) && looksPhone) {
+    return `tel:${v.replace(/[\s()-]/g, "")}`;
+  }
+  if (l.includes("почт") || l.includes("mail") || l.includes("email")) {
+    if (looksEmail) return `mailto:${v}`;
+  }
+  if (looksEmail && !/^https?:\/\//i.test(v)) {
+    return `mailto:${v}`;
+  }
+  return normalizeUrl(v);
 }
 
 /** Чтение файла как data-URL (base64) для сохранения картинок в состоянии. */

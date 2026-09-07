@@ -27,6 +27,7 @@ import {
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import {
+  actionButtonHref,
   buildVCard,
   cn,
   downloadFile,
@@ -192,7 +193,10 @@ export function CardVisual({
           {/* Кнопка действия */}
           {showAction && (
             <a
-              href={normalizeUrl(c.actionButton.url) || "#"}
+              href={
+                actionButtonHref(c.actionButton.label, c.actionButton.url) ||
+                "#"
+              }
               target="_blank"
               rel="noreferrer"
               className="btn-grad flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold"
