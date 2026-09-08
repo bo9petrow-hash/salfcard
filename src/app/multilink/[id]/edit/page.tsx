@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
   Check,
+  Copy,
   Eye,
   Globe,
   Loader2,
@@ -67,6 +68,7 @@ function EditMultilink() {
     url?: string;
   } | null>(null);
   const [customAction, setCustomAction] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const {
     register,
@@ -133,8 +135,7 @@ function EditMultilink() {
           type: multilink.type,
           data: values as MultilinkSettings,
         });
-        const url = `${window.location.origin}/p/${multilink.slug}`;
-        setPublishMsg({ ok: true, text: "Сохранено и опубликовано.", url });
+        setPublishMsg(null);
       } catch {
         setPublishMsg({
           ok: false,
@@ -144,6 +145,25 @@ function EditMultilink() {
         setPublishing(false);
       }
     }
+  };
+
+  // Копирование публичной ссылки визитки.
+  const copyLink = async () => {
+    if (!multilink) return;
+    const url = `${window.location.origin}/p/${multilink.slug}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // запасной вариант, если clipboard недоступен
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch {}
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
   };
 
   // Сохраняем и открываем превью в этой же вкладке (надёжно на мобильных).
@@ -616,9 +636,13 @@ function EditMultilink() {
           {saved && (
             <span className="mr-auto inline-flex items-center gap-1.5 text-sm text-brand-light">
               <Check size={16} />
-              Изменения сохранены
+              Сохранено
             </span>
           )}
+          <Button type="button" variant="secondary" onClick={copyLink}>
+            <Copy size={16} />
+            {copied ? "Скопировано" : "Скопировать ссылку"}
+          </Button>
           <Button type="button" variant="secondary" onClick={openPreview}>
             <Eye size={16} />
             Просмотреть страницу
