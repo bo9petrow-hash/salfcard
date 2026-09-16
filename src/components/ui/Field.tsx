@@ -18,7 +18,7 @@ export const Textarea = forwardRef<
 >(({ className, ...props }, ref) => (
   <textarea
     ref={ref}
-    className={cn(baseControl, "min-h-[96px] py-2.5 resize-y", className)}
+    className={cn(baseControl, "min-h-[120px] py-2.5 resize-y", className)}
     {...props}
   />
 ));
