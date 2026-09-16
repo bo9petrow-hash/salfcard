@@ -214,23 +214,11 @@ function EditMultilink() {
         Назад
       </Link>
 
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Настройки</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            {multilink.title} · selfcards.ru/p/{multilink.slug}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button type="button" variant="secondary" onClick={openPreview}>
-            <Eye size={16} />
-            Просмотреть страницу
-          </Button>
-          <Button type="submit">
-            <Save size={16} />
-            Сохранить
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-white">Настройки</h1>
+        <p className="mt-1 text-sm text-slate-400">
+          {multilink.title} · selfcards.ru/p/{multilink.slug}
+        </p>
       </div>
 
       {/* Управление данными страницы */}
@@ -248,7 +236,7 @@ function EditMultilink() {
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
               <UploadField
-                label="Логотип"
+                label="Логотип / аватар"
                 disabled={!isBusiness}
                 value={logo}
                 preview="logo"
@@ -599,55 +587,58 @@ function EditMultilink() {
       <SectionCard title={multilink.type === "offline" ? "Описание" : "Обо мне"}>
         <Field label={multilink.type === "offline" ? "О заведении" : "Пара слов о себе"}>
           <Textarea
+            className="min-h-[140px]"
             placeholder="Коротко расскажите о себе или своём деле…"
             {...register("contacts.about")}
           />
         </Field>
       </SectionCard>
 
-      {/* Нижние кнопки */}
-      <div className="pb-2">
-        {publishMsg && (
-          <div
-            className={
-              publishMsg.ok
-                ? "mb-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200"
-                : "mb-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300"
-            }
-          >
-            {publishMsg.text}
-            {publishMsg.ok && publishMsg.url && (
-              <>
-                {" "}
-                Ссылка:{" "}
-                <a
-                  href={publishMsg.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium text-white underline break-all"
-                >
-                  {publishMsg.url}
-                </a>
-              </>
-            )}
-          </div>
-        )}
-        <div className="flex flex-wrap items-center justify-end gap-2">
+      {/* Сообщение о публикации */}
+      {publishMsg && (
+        <div
+          className={
+            publishMsg.ok
+              ? "rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200"
+              : "rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300"
+          }
+        >
+          {publishMsg.text}
+          {publishMsg.ok && publishMsg.url && (
+            <>
+              {" "}
+              Ссылка:{" "}
+              <a
+                href={publishMsg.url}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-white underline break-all"
+              >
+                {publishMsg.url}
+              </a>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Липкая панель действий */}
+      <div className="sticky bottom-3 z-20">
+        <div className="glass flex flex-wrap items-center justify-end gap-2 rounded-2xl px-3 py-3 shadow-pop sm:px-4">
           {saved && (
             <span className="mr-auto inline-flex items-center gap-1.5 text-sm text-brand-light">
               <Check size={16} />
               Сохранено
             </span>
           )}
-          <Button type="button" variant="secondary" onClick={copyLink}>
+          <Button type="button" variant="secondary" size="sm" onClick={copyLink}>
             <Copy size={16} />
             {copied ? "Скопировано" : "Скопировать ссылку"}
           </Button>
-          <Button type="button" variant="secondary" onClick={openPreview}>
+          <Button type="button" variant="secondary" size="sm" onClick={openPreview}>
             <Eye size={16} />
-            Просмотреть страницу
+            Просмотреть
           </Button>
-          <Button type="submit" disabled={publishing}>
+          <Button type="submit" size="sm" disabled={publishing}>
             {publishing ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
@@ -718,67 +709,127 @@ function UploadField({
         {disabled && <Lock size={13} className="text-slate-500" />}
       </div>
 
-      {/* Превью, если файл выбран */}
-      {!disabled && value && (
-        <div className="relative overflow-hidden rounded-lg border border-white/12 bg-night-900/40">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={value}
-            alt={label}
-            decoding="async"
-            className={
-              preview === "logo"
-                ? "mx-auto h-20 w-20 object-contain py-2"
-                : "h-24 w-full object-cover"
-            }
-          />
-          <button
-            type="button"
-            onClick={onClear}
-            aria-label="Убрать изображение"
-            className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/50 text-white transition-colors hover:bg-black/70"
-          >
-            <X size={15} />
-          </button>
-        </div>
-      )}
-
-      <div
-        className={`flex items-center gap-3 rounded-lg border border-dashed px-3.5 py-3 ${
-          disabled
-            ? "border-white/10 bg-white/[0.02]"
-            : "border-white/15 bg-white/5"
-        }`}
-      >
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          disabled={disabled || busy}
-          onClick={() => inputRef.current?.click()}
+      {preview === "logo" ? (
+        // Компактный ряд: квадратное превью + кнопка
+        <div
+          className={`flex items-center gap-3 rounded-lg border border-dashed px-3 py-3 ${
+            disabled
+              ? "border-white/10 bg-white/[0.02]"
+              : "border-white/15 bg-white/5"
+          }`}
         >
-          <Upload size={15} />
-          {busy ? "Обработка…" : "Выбрать файл"}
-        </Button>
-        <span className="text-xs text-slate-400">
-          {value && !disabled ? "Файл выбран" : "Файл не выбран"}
-        </span>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          disabled={disabled}
-          onChange={handleFile}
-        />
-      </div>
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/12 bg-night-900/40">
+            {!disabled && value ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={value}
+                  alt={label}
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={onClear}
+                  aria-label="Убрать изображение"
+                  className="absolute right-0.5 top-0.5 inline-flex h-5 w-5 items-center justify-center rounded bg-black/55 text-white transition-colors hover:bg-black/75"
+                >
+                  <X size={12} />
+                </button>
+              </>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-slate-500">
+                <Upload size={18} />
+              </div>
+            )}
+          </div>
+          <div className="min-w-0">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={disabled || busy}
+              onClick={() => inputRef.current?.click()}
+            >
+              <Upload size={15} />
+              {busy ? "Обработка…" : value && !disabled ? "Заменить" : "Выбрать файл"}
+            </Button>
+            <p className="mt-1 text-xs text-slate-400">
+              {disabled
+                ? "Доступно в тарифе «Бизнес»"
+                : value
+                ? "Файл выбран"
+                : "PNG или JPG, лучше квадрат"}
+            </p>
+          </div>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={disabled}
+            onChange={handleFile}
+          />
+        </div>
+      ) : (
+        // Фон: широкое превью сверху + ряд с кнопкой
+        <>
+          {!disabled && value && (
+            <div className="relative overflow-hidden rounded-lg border border-white/12 bg-night-900/40">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={value}
+                alt={label}
+                decoding="async"
+                className="h-24 w-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={onClear}
+                aria-label="Убрать изображение"
+                className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/50 text-white transition-colors hover:bg-black/70"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          )}
+          <div
+            className={`flex items-center gap-3 rounded-lg border border-dashed px-3.5 py-3 ${
+              disabled
+                ? "border-white/10 bg-white/[0.02]"
+                : "border-white/15 bg-white/5"
+            }`}
+          >
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={disabled || busy}
+              onClick={() => inputRef.current?.click()}
+            >
+              <Upload size={15} />
+              {busy ? "Обработка…" : "Выбрать файл"}
+            </Button>
+            <span className="text-xs text-slate-400">
+              {value && !disabled ? "Файл выбран" : "Файл не выбран"}
+            </span>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={disabled}
+              onChange={handleFile}
+            />
+          </div>
+          {disabled && (
+            <p className="text-xs text-slate-400">Доступно в тарифе «Бизнес»</p>
+          )}
+        </>
+      )}
 
       {uploadError && !disabled && (
         <p className="text-xs text-red-400">{uploadError}</p>
-      )}
-
-      {disabled && (
-        <p className="text-xs text-slate-400">Доступно в тарифе «Бизнес»</p>
       )}
     </div>
   );
