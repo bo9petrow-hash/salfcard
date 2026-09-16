@@ -7,10 +7,10 @@ import {
   Check,
   ExternalLink,
   Eye,
+  Lightbulb,
   Link2,
   Nfc,
   Pencil,
-  PlayCircle,
   Plus,
   QrCode,
   Repeat,
@@ -115,6 +115,21 @@ function Dashboard() {
   const limit = TARIFF_LIMITS[user.tariff];
   const usageLabel = limit === Infinity ? "∞" : String(limit);
   const limitReached = user.multilinks.length >= limit;
+  const totalViews = user.multilinks.reduce((s, m) => s + (m.views ?? 0), 0);
+  const nfcCount = user.nfcDevices.length;
+
+  const [tipHidden, setTipHidden] = useState(false);
+  useEffect(() => {
+    try {
+      setTipHidden(localStorage.getItem("sc_tip_hidden") === "1");
+    } catch {}
+  }, []);
+  const hideTip = () => {
+    setTipHidden(true);
+    try {
+      localStorage.setItem("sc_tip_hidden", "1");
+    } catch {}
+  };
 
   // Приветствие: имя, иначе email, иначе «Пользователь».
   const displayName = user.name?.trim() || user.email || "Пользователь";
@@ -152,140 +167,136 @@ function Dashboard() {
     user.multilinks.find((m) => m.id === id)?.title;
 
   return (
-    <div className="space-y-6">
-      {/* Верхняя панель */}
-      <div className="glass overflow-hidden rounded-2xl shadow-card">
-        <div className="border-b border-white/10 px-5 py-5 sm:px-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-sm text-slate-400">Добро пожаловать</p>
-              {!editingName ? (
-                <div className="flex items-center gap-2">
-                  <h1 className="truncate text-xl font-bold text-white">
-                    Привет, {hydrated ? displayName : "…"}
-                  </h1>
-                  {hydrated && (
-                    <button
-                      onClick={startEditName}
-                      aria-label="Изменить имя"
-                      className="rounded-md p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
-                    >
-                      <Pencil size={15} />
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="mt-1 flex items-center gap-2">
-                  <Input
-                    autoFocus
-                    value={nameDraft}
-                    onChange={(e) => setNameDraft(e.target.value)}
-                    placeholder="Ваше имя"
-                    className="h-9 w-44"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") saveName();
-                      if (e.key === "Escape") setEditingName(false);
-                    }}
-                  />
-                  <Button size="sm" onClick={saveName}>
-                    <Check size={16} />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setEditingName(false)}
-                    aria-label="Отмена"
+    <div className="space-y-5">
+      {/* Верхняя панель (дашборд) */}
+      <div className="glass rounded-2xl px-5 py-5 shadow-card sm:px-6">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm text-slate-400">Личный кабинет</p>
+            {!editingName ? (
+              <div className="mt-0.5 flex items-center gap-2">
+                <h1 className="truncate text-2xl font-bold text-white">
+                  {hydrated ? displayName : "…"}
+                </h1>
+                {hydrated && (
+                  <button
+                    onClick={startEditName}
+                    aria-label="Изменить имя"
+                    className="rounded-md p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
                   >
-                    <X size={16} />
-                  </Button>
-                </div>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Link href="/profile">
-                <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-white/10">
-                  Тариф: {hydrated ? user.tariff : "…"}
-                </span>
-              </Link>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-gradient px-3 py-1 text-xs font-semibold text-white">
-                <Link2 size={13} />
-                {hydrated ? user.multilinks.length : 0} / {usageLabel}
-              </span>
-            </div>
+                    <Pencil size={15} />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="mt-1 flex items-center gap-2">
+                <Input
+                  autoFocus
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  placeholder="Ваше имя"
+                  className="h-9 w-44"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveName();
+                    if (e.key === "Escape") setEditingName(false);
+                  }}
+                />
+                <Button size="sm" onClick={saveName}>
+                  <Check size={16} />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setEditingName(false)}
+                  aria-label="Отмена"
+                >
+                  <X size={16} />
+                </Button>
+              </div>
+            )}
           </div>
+          <Link href="/profile" className="shrink-0">
+            <span className="inline-flex items-center rounded-full bg-brand-gradient px-3.5 py-1.5 text-xs font-bold text-white">
+              {hydrated ? user.tariff : "…"}
+            </span>
+          </Link>
+        </div>
+
+        {/* Статистика */}
+        <div className="mt-4 grid grid-cols-3 gap-2.5">
+          <StatCard
+            value={hydrated ? String(user.multilinks.length) : "…"}
+            sub={`/ ${usageLabel}`}
+            label="Визитки"
+          />
+          <StatCard
+            value={hydrated ? String(totalViews) : "…"}
+            label="Просмотров"
+          />
+          <StatCard
+            value={hydrated ? String(nfcCount) : "…"}
+            label="Носители"
+          />
         </div>
 
         {/* Промокод */}
-        <div className="px-5 py-4 sm:px-6">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-            <div className="flex-1">
-              <Field
-                label="Промокод"
-                hint="Введите промокод, чтобы активировать возможности тарифа «Бизнес»."
-              >
-                <div className="relative">
-                  <Ticket
-                    size={17}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                  <Input
-                    value={promo}
-                    onChange={(e) => setPromo(e.target.value)}
-                    placeholder="Например, SELFCARDS"
-                    className="pl-9"
-                    onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
-                  />
-                </div>
-              </Field>
-            </div>
-            <Button onClick={handleApplyPromo} className="sm:mb-[2px]">
-              Применить
-            </Button>
+        <div className="mt-4 flex gap-2">
+          <div className="relative flex-1">
+            <Ticket
+              size={17}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+            <Input
+              value={promo}
+              onChange={(e) => setPromo(e.target.value)}
+              placeholder="Промокод"
+              className="pl-9"
+              onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+            />
           </div>
-          {promoMsg && (
-            <p
-              className={cn(
-                "mt-2 flex items-center gap-1.5 text-sm",
-                promoMsg.ok ? "text-brand-light" : "text-red-400"
-              )}
-            >
-              {promoMsg.ok && <Check size={15} />}
-              {promoMsg.text}
-            </p>
-          )}
+          <Button onClick={handleApplyPromo} className="shrink-0">
+            Применить
+          </Button>
         </div>
+        {promoMsg && (
+          <p
+            className={cn(
+              "mt-2 flex items-center gap-1.5 text-sm",
+              promoMsg.ok ? "text-brand-light" : "text-red-400"
+            )}
+          >
+            {promoMsg.ok && <Check size={15} />}
+            {promoMsg.text}
+          </p>
+        )}
       </div>
 
-      {/* Инструкция */}
-      <SectionCard title="Как настроить вашу визитку?">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <InstructionStep
-            icon={<Link2 size={18} />}
-            step="Вариант 1"
-            title="Мультиссылка"
-            text="Соберите все контакты и ссылки на одной странице-визитке и поделитесь ей одним касанием."
-          />
-          <InstructionStep
-            icon={<Repeat size={18} />}
-            step="Вариант 2"
-            title="Переадресация"
-            text="Направьте NFC-носитель сразу на нужный адрес: сайт, профиль или чат."
-          />
+      {/* Подсказка (сворачиваемая) */}
+      {hydrated && !tipHidden && (
+        <div className="flex items-center gap-3 rounded-2xl border border-brand-light/25 bg-gradient-to-br from-brand-blue/10 to-brand-purple/10 px-4 py-3">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white">
+            <Lightbulb size={17} />
+          </span>
+          <p className="text-[13px] leading-snug text-slate-300">
+            <span className="font-semibold text-white">
+              Настройте визитку:
+            </span>{" "}
+            соберите все ссылки в мультиссылку или направьте NFC напрямую.
+          </p>
+          <button
+            onClick={hideTip}
+            aria-label="Скрыть подсказку"
+            className="ml-auto shrink-0 rounded-md p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <X size={16} />
+          </button>
         </div>
-        <a
-          href="#"
-          onClick={(e) => e.preventDefault()}
-          className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-light underline-offset-4 hover:underline"
-        >
-          <PlayCircle size={18} />
-          Смотреть видеоинструкцию
-        </a>
-      </SectionCard>
+      )}
 
       {/* Мультиссылки */}
       <SectionCard
-        title="Мультиссылки"
-        description="Страницы-визитки со всеми вашими ссылками."
+        title="Ваши визитки"
+        description="Страницы со всеми вашими ссылками."
         action={
           <Link
             href="/multilink/create"
@@ -423,7 +434,7 @@ function Dashboard() {
 
       {/* NFC Носители */}
       <SectionCard
-        title="NFC Носители"
+        title="NFC-носители"
         description="Карты, брелоки и стикеры, привязанные к вашим страницам."
         action={
           <div className="flex flex-wrap items-center gap-2">
@@ -581,32 +592,24 @@ function StatusBadge({ active }: { active: boolean }) {
   );
 }
 
-function InstructionStep({
-  icon,
-  step,
-  title,
-  text,
+function StatCard({
+  value,
+  sub,
+  label,
 }: {
-  icon: React.ReactNode;
-  step: string;
-  title: string;
-  text: string;
+  value: string;
+  sub?: string;
+  label: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <div className="flex items-center gap-2">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient text-white">
-          {icon}
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+      <div className="flex items-baseline gap-1">
+        <span className="bg-brand-gradient bg-clip-text text-[26px] font-extrabold leading-none tracking-tight text-transparent tabular-nums">
+          {value}
         </span>
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          {step}
-        </span>
+        {sub && <span className="text-sm font-bold text-slate-500">{sub}</span>}
       </div>
-      <p className="mt-3 flex items-center gap-1 text-sm font-semibold text-white">
-        {title}
-        <ArrowUpRight size={15} className="text-brand-light" />
-      </p>
-      <p className="mt-1 text-sm leading-relaxed text-slate-300">{text}</p>
+      <div className="mt-1.5 text-xs text-slate-400">{label}</div>
     </div>
   );
 }
