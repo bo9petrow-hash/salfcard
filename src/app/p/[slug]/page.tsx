@@ -1,6 +1,6 @@
 import { CardVisual } from "@/components/CardVisual";
 import { ViewCounter } from "@/components/ViewCounter";
-import { getSupabasePublic } from "@/lib/supabase";
+import { getSupabaseAdmin, getSupabasePublic } from "@/lib/supabase";
 import type { Multilink } from "@/types";
 
 // Всегда свежие данные (визитку могли только что обновить).
@@ -12,7 +12,9 @@ export default async function PublicCardPage({
   params: { slug: string };
 }) {
   const slug = params.slug;
-  const supabase = getSupabasePublic();
+  // Читаем визитку серверным ключом в обход RLS, чтобы публичная
+  // страница показывала данные любой карты (у гостя нет доступа к data).
+  const supabase = getSupabaseAdmin() ?? getSupabasePublic();
 
   let row: any = null;
   if (supabase) {
