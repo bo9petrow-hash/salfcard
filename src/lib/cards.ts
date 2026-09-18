@@ -35,24 +35,48 @@ export async function fetchMyCards(userId: string): Promise<Multilink[]> {
   return (data ?? []).map(rowToMultilink);
 }
 
-/** Создаёт или обновляет карту (по slug) с привязкой к владельцу. */
+/**
+ * Создаёт или обновляет карту (по slug) с привязкой к владельцу.
+ *
+ * Запись идёт через серверный роут /api/save-card (service_role в обход RLS):
+ * прямой upsert из браузера под ключом authenticated не проходил из-за
+ * отсутствующей политики UPDATE — Supabase возвращал 200, но строку не менял,
+ * поэтому правки визитки не доходили до публичной ссылки на чипе.
+ */
 export async function saveCard(
   userId: string,
   card: { slug: string; type: MultilinkType; data: MultilinkSettings }
 ): Promise<void> {
   const supabase = getSupabaseBrowser();
   if (!supabase || !userId) throw new Error("Supabase не настроен");
-  const { error } = await supabase.from("cards").upsert(
-    {
+
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) throw new Error("Сессия не найдена, войдите заново");
+
+  const res = await fetch("/api/save-card", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
       slug: card.slug,
       type: card.type,
       data: card.data,
-      owner_id: userId,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "slug" }
-  );
-  if (error) throw error;
+    }),
+  });
+
+  if (!res.ok) {
+    let message = "Не удалось сохранить визитку";
+    try {
+      const j = await res.json();
+      if (j?.error) message = j.error;
+    } catch {
+      /* тело не JSON — оставляем общее сообщение */
+    }
+    throw new Error(message);
+  }
 }
 
 /** Проверяет, занят ли slug (адрес визитки) в базе. */
