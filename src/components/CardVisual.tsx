@@ -435,6 +435,18 @@ function OfflineSections({ b }: { b: BusinessInfo }) {
         </div>
       )}
 
+      {b.customButtons && b.customButtons.length > 0 && (
+        <div className="space-y-2">
+          {b.customButtons.map((btn) => (
+            <LinkButton
+              key={btn.id}
+              label={btn.label}
+              href={normalizeUrl(btn.url)}
+            />
+          ))}
+        </div>
+      )}
+
       {(b.hours || b.address) && (
         <Section title="Информация">
           {b.hours && (
