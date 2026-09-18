@@ -166,7 +166,7 @@ export function CardVisual({
           )}
 
           <div className="relative">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white/95 text-2xl font-bold text-night-900 shadow-lg">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white/95 text-2xl font-bold text-night-900 shadow-lg">
               {logo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
