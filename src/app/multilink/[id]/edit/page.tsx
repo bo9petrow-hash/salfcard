@@ -92,6 +92,10 @@ function EditMultilink() {
     control,
     name: "contacts.work.customButtons",
   });
+  const businessButtons = useFieldArray({
+    control,
+    name: "business.customButtons",
+  });
 
   const loadedRef = useRef<string | null>(null);
   useEffect(() => {
@@ -460,6 +464,21 @@ function EditMultilink() {
                 />
               </Field>
             </div>
+          </SectionCard>
+
+          {/* Дополнительные кнопки */}
+          <SectionCard title="Дополнительные кнопки">
+            <CustomButtonList
+              fields={businessButtons.fields}
+              register={register}
+              remove={businessButtons.remove}
+              append={() =>
+                businessButtons.append({ id: uid(), label: "", url: "" })
+              }
+              namePrefix="business.customButtons"
+              groupLabel="карточку"
+              errors={errors.business?.customButtons}
+            />
           </SectionCard>
         </>
       )}
