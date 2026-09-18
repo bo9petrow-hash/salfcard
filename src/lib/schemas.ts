@@ -76,6 +76,7 @@ export const settingsSchema = z.object({
     reviewLink: z.string().trim(),
     menu: z.string().trim(),
     payment: z.string().trim(),
+    customButtons: z.array(customButtonSchema).max(5, "Не более 5 кнопок"),
   }),
 });
 
