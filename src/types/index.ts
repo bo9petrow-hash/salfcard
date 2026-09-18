@@ -65,6 +65,7 @@ export interface BusinessInfo {
   reviewLink: string;
   menu: string;
   payment: string;
+  customButtons: CustomButton[];
 }
 
 export interface Multilink {
