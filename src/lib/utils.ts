@@ -71,6 +71,7 @@ export function createDefaultSettings(): MultilinkSettings {
       reviewLink: "",
       menu: "",
       payment: "",
+      customButtons: [],
     },
   };
 }
@@ -96,7 +97,13 @@ export function normalizeSettings(saved: Partial<MultilinkSettings>): MultilinkS
       actionButton: { ...def.contacts.actionButton, ...(c.actionButton || {}) },
       about: c.about ?? def.contacts.about,
     },
-    business: { ...def.business, ...(s.business || {}) },
+    business: {
+      ...def.business,
+      ...(s.business || {}),
+      customButtons: Array.isArray(s.business?.customButtons)
+        ? s.business.customButtons
+        : [],
+    },
   };
 }
 
