@@ -8,6 +8,14 @@ const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 export const isSupabaseConfigured = Boolean(URL && ANON);
 
 /**
+ * fetch без кэша. Next.js по умолчанию кэширует серверные fetch-запросы
+ * (Data Cache), из-за чего публичная страница /p/[slug] показывала устаревшие
+ * данные визитки даже после сохранения. no-store гарантирует свежее чтение.
+ */
+const noStoreFetch: typeof fetch = (input: any, init?: any) =>
+  fetch(input, { ...(init || {}), cache: "no-store" });
+
+/**
  * Публичный клиент (anon/publishable ключ) — только чтение,
  * доступ ограничен политиками RLS. Безопасен на сервере и в браузере.
  */
@@ -15,6 +23,7 @@ export function getSupabasePublic(): SupabaseClient | null {
   if (!URL || !ANON) return null;
   return createClient(URL, ANON, {
     auth: { persistSession: false },
+    global: { fetch: noStoreFetch },
   });
 }
 
@@ -26,5 +35,6 @@ export function getSupabaseAdmin(): SupabaseClient | null {
   if (!URL || !SERVICE) return null;
   return createClient(URL, SERVICE, {
     auth: { persistSession: false },
+    global: { fetch: noStoreFetch },
   });
 }
