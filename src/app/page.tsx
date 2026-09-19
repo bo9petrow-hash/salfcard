@@ -329,7 +329,7 @@ function Dashboard() {
                         {m.title}
                       </p>
                       <p className="truncate text-xs text-slate-400">
-                        selfcards.ru/p/{m.slug}
+                        app.selfcards.ru/p/{m.slug}
                       </p>
                     </div>
                     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/10 px-2 py-1 text-xs font-medium text-brand-light">
@@ -564,7 +564,7 @@ function Dashboard() {
       <QrModal
         open={qrCard !== null}
         onClose={() => setQrCard(null)}
-        url={qrCard ? `https://selfcards.ru/p/${qrCard.slug}` : ""}
+        url={qrCard ? `https://app.selfcards.ru/p/${qrCard.slug}` : ""}
         title={qrCard?.title}
       />
     </div>
