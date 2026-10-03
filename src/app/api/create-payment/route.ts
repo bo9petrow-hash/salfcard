@@ -24,6 +24,13 @@ function corsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
+// Форматирование суммы без зависимости от локали: "1 590 ₽".
+function money(n: number): string {
+  return Math.round(n)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
+}
+
 export async function OPTIONS(req: Request) {
   return new NextResponse(null, { status: 204, headers: corsHeaders(req.headers.get("origin")) });
 }
@@ -48,7 +55,7 @@ export async function POST(req: Request) {
     return json({ error: "Некорректный запрос" }, 400);
   }
 
-  // 1. Считаем сумму заказа на сервере по доверенному каталогу.
+  // 1. Считаем сумму заказа на сервере по доверенному каталогу (анти-подмена цены).
   let cart;
   try {
     cart = parseCart(body?.items);
@@ -56,14 +63,21 @@ export async function POST(req: Request) {
     return json({ error: e?.message || "Ошибка корзины" }, 400);
   }
 
+  // 2. Данные покупателя и доставки.
   const name = String(body?.customer?.name || "").trim().slice(0, 120);
   const phone = String(body?.customer?.phone || "").trim().slice(0, 32);
   const email = String(body?.customer?.email || "").trim().slice(0, 120);
+  const city = String(body?.customer?.city || "").trim().slice(0, 120);
+  const address = String(body?.customer?.address || "").trim().slice(0, 300);
+  const userComment = String(body?.customer?.comment || "").trim().slice(0, 500);
   if (!phone && !email) {
     return json({ error: "Укажите телефон или email для связи" }, 400);
   }
 
   const value = cart.total.toFixed(2);
+  const totalQty = cart.lines.reduce((s, l) => s + l.qty, 0);
+
+  // Позиции для чека (54-ФЗ) и для карточки заказа.
   const itemsJson = cart.lines.map((l) => ({
     sku: l.product.sku,
     title: l.product.title,
@@ -71,16 +85,33 @@ export async function POST(req: Request) {
     qty: l.qty,
   }));
 
-  // 2. Создаём заказ в статусе pending.
+  // Текстовое описание заказа — попадает в те же поля, что читает Telegram-уведомление.
+  const breakdown = cart.lines
+    .map((l) => `${l.qty}×${l.product.title} — ${money(l.product.price)} (${money(l.product.price * l.qty)})`)
+    .join("\n");
+  const productSummary =
+    cart.lines.map((l) => `${l.qty}×${l.product.title}`).join(", ") + " — итого " + money(cart.total);
+  const commentFull =
+    "🛒 Состав заказа:\n" + breakdown +
+    "\nИтого: " + money(cart.total) + " (" + totalQty + " шт.)" +
+    (userComment ? "\n\nКомментарий клиента: " + userComment : "") +
+    "\n\n✅ ОПЛАЧЕНО ОНЛАЙН (ЮKassa)";
+
+  // 3. Создаём заказ в статусе pending. Пишем в «старые» колонки (name/phone/...),
+  //    чтобы Telegram-уведомление пришло полным, когда заказ станет оплаченным.
   const { data: order, error: orderErr } = await admin
     .from("orders")
     .insert({
-      items: itemsJson,
+      name: name || null,
+      phone: phone || null,
+      email: email || null,
+      product: productSummary,
+      quantity: totalQty,
+      city: city || null,
+      address: address || null,
+      comment: commentFull,
       amount: cart.total,
       currency: "RUB",
-      customer_name: name || null,
-      customer_phone: phone || null,
-      customer_email: email || null,
       status: "pending",
     })
     .select("id")
@@ -89,8 +120,7 @@ export async function POST(req: Request) {
     return json({ error: "Не удалось создать заказ" }, 500);
   }
 
-  // 3. Чек для 54-ФЗ (ЮKassa сама фискализирует). Значения налогов — из env,
-  //    по умолчанию УСН «доход» (2) и без НДС (1); при необходимости поменяешь.
+  // 4. Чек для 54-ФЗ. Значения налогов — из env (по умолчанию УСН «доход» = 2, без НДС = 1).
   const vatCode = Number(process.env.YOOKASSA_VAT_CODE || 1);
   const taxSystemCode = Number(process.env.YOOKASSA_TAX_SYSTEM_CODE || 2);
   const receipt: any = {
@@ -111,7 +141,7 @@ export async function POST(req: Request) {
   const returnUrl =
     process.env.YOOKASSA_RETURN_URL || "https://shop.selfcards.ru/?paid=1";
 
-  // 4. Создаём платёж в ЮKassa.
+  // 5. Создаём платёж в ЮKassa.
   let payment: any;
   try {
     payment = await createPayment({
