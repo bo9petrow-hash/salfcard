@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 import { getSupabaseAdmin } from "@/lib/supabase";
 
@@ -76,6 +77,9 @@ export async function POST(req: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Сбрасываем кеш публичной страницы визитки — изменения видны сразу.
+  try { revalidateTag(`card-${slug}`); } catch { /* не критично */ }
 
   return NextResponse.json({ ok: true });
 }
