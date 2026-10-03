@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 
 import { Logo } from "@/components/Logo";
+import { CardQrButton } from "@/components/CardQrButton";
 import { Button } from "@/components/ui/Button";
 import {
   actionButtonHref,
@@ -164,6 +165,9 @@ export function CardVisual({
           ) : (
             <div className="absolute inset-0 bg-brand-gradient opacity-90" />
           )}
+
+          {/* QR-код визитки — если у собеседника не сработал NFC */}
+          <CardQrButton slug={multilink.slug} name={displayName} />
 
           <div className="relative">
             <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white/95 text-2xl font-bold text-night-900 shadow-lg">
