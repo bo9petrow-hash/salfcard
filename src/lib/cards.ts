@@ -22,17 +22,31 @@ export function rowToMultilink(row: CardRow): Multilink {
   };
 }
 
+// Один и тот же запрос карт при входе делали сразу два места (CardsSync и
+// главная кабинета) — это ~400 КБ дважды. Одновременные вызовы склеиваем.
+let inflight: { userId: string; at: number; promise: Promise<Multilink[]> } | null = null;
+
 /** Загружает карты текущего владельца. */
 export async function fetchMyCards(userId: string): Promise<Multilink[]> {
   const supabase = getSupabaseBrowser();
   if (!supabase || !userId) return [];
-  const { data, error } = await supabase
-    .from("cards")
-    .select("slug, type, data, views")
-    .eq("owner_id", userId)
-    .order("created_at", { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map(rowToMultilink);
+  if (inflight && inflight.userId === userId && Date.now() - inflight.at < 5000) {
+    return inflight.promise;
+  }
+  const promise = (async () => {
+    const { data, error } = await supabase
+      .from("cards")
+      .select("slug, type, data, views")
+      .eq("owner_id", userId)
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    return (data ?? []).map(rowToMultilink);
+  })();
+  inflight = { userId, at: Date.now(), promise };
+  promise.catch(() => {
+    inflight = null;
+  });
+  return promise;
 }
 
 /**
