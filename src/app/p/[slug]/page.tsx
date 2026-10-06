@@ -1,8 +1,10 @@
 import { createHash } from "crypto";
+import type { Metadata } from "next";
 import { createClient } from "@supabase/supabase-js";
 
 import { CardVisual } from "@/components/CardVisual";
 import { ViewCounter } from "@/components/ViewCounter";
+import { normalizeSettings } from "@/lib/utils";
 import type { Multilink } from "@/types";
 
 /**
@@ -50,6 +52,44 @@ function imageUrl(slug: string, field: "logo" | "background", value: unknown) {
   if (!value.startsWith("data:")) return value; // уже обычная ссылка
   const v = createHash("sha1").update(value).digest("hex").slice(0, 12);
   return `/i/${encodeURIComponent(slug)}/${field}?v=${v}`;
+}
+
+/**
+ * Заголовок и превью ссылки: когда визитку пересылают в Telegram/WhatsApp,
+ * показывается имя владельца, должность и логотип, а не общий «SELFCARDS».
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const row: any = await getCard(params.slug);
+  if (!row) return { title: "Визитка не найдена — SELFCARDS", robots: { index: false } };
+  try {
+    const s = normalizeSettings(row.data ?? {});
+    const isOffline = row.type === "offline";
+    const name =
+      (isOffline ? s.business?.name || s.name : s.name || s.contacts?.personal?.name) || row.slug;
+    const sub = isOffline
+      ? s.business?.address || ""
+      : [s.contacts?.work?.position, s.contacts?.work?.company].filter(Boolean).join(" · ");
+    const description = (sub || (s.contacts as any)?.about || "Электронная визитка SELFCARDS").slice(0, 160);
+    const logo = imageUrl(row.slug, "logo", row.data?.logo);
+    const url = `https://app.selfcards.ru/p/${row.slug}`;
+    const images =
+      typeof logo === "string" && logo
+        ? [logo.startsWith("/") ? `https://app.selfcards.ru${logo}` : logo]
+        : undefined;
+    return {
+      title: `${name} — визитка`,
+      description,
+      alternates: { canonical: url },
+      openGraph: { title: name, description, url, siteName: "SELFCARDS", type: "profile", images },
+      twitter: { card: "summary", title: name, description, images },
+    };
+  } catch {
+    return { title: "Визитка — SELFCARDS" };
+  }
 }
 
 export default async function PublicCardPage({
