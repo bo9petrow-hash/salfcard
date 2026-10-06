@@ -3,8 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { StarsBackground } from "@/components/StarsBackground";
 import { AuthProvider } from "@/components/AuthProvider";
-import { ProfileSync } from "@/components/ProfileSync";
-import { CardsSync } from "@/components/CardsSync";
+import { PrivateSync } from "@/components/PrivateSync";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://selfcards.ru"),
@@ -42,8 +41,7 @@ export default function RootLayout({
       <body className="min-h-screen font-sans">
         <StarsBackground />
         <AuthProvider>
-          <ProfileSync />
-          <CardsSync />
+          <PrivateSync />
           <Header />
           <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6 sm:px-6">
             {children}
