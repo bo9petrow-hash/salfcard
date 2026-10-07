@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { parseCart } from "@/lib/products";
 import { createPayment, isYookassaConfigured } from "@/lib/yookassa";
+import { getPoints, quote } from "@/lib/cdek";
 
 export const dynamic = "force-dynamic";
 
@@ -67,14 +68,45 @@ export async function POST(req: Request) {
   const name = String(body?.customer?.name || "").trim().slice(0, 120);
   const phone = String(body?.customer?.phone || "").trim().slice(0, 32);
   const email = String(body?.customer?.email || "").trim().slice(0, 120);
-  const city = String(body?.customer?.city || "").trim().slice(0, 120);
-  const address = String(body?.customer?.address || "").trim().slice(0, 300);
+  let city = String(body?.customer?.city || "").trim().slice(0, 120);
+  let address = String(body?.customer?.address || "").trim().slice(0, 300);
   const userComment = String(body?.customer?.comment || "").trim().slice(0, 500);
   if (!phone && !email) {
     return json({ error: "Укажите телефон или email для связи" }, 400);
   }
 
-  const value = cart.total.toFixed(2);
+  // 2б. Доставка СДЭК: цену и адрес пункта считаем/проверяем на сервере.
+  let delivery: null | { price: number; text: string; period: string } = null;
+  if (body?.delivery && body.delivery.city_code) {
+    try {
+      const d = body.delivery;
+      const cityCode = Number(d.city_code);
+      const mode = d.mode === "door" ? "door" : "pvz";
+      const cityName = String(d.city_name || "").trim().slice(0, 120);
+      let text = "";
+      if (mode === "pvz") {
+        const pts = await getPoints(cityCode);
+        const pt = pts.find((p) => p.code === String(d.pvz_code || ""));
+        if (!pt) return json({ error: "Выберите пункт выдачи СДЭК" }, 400);
+        text = `СДЭК ПВЗ ${pt.code}: ${pt.address}`;
+      } else {
+        const addr = String(d.address || "").trim().slice(0, 255);
+        if (addr.length < 5) return json({ error: "Укажите адрес для курьера" }, 400);
+        text = `Курьер СДЭК: ${addr}`;
+      }
+      const q = await quote({ cityCode, mode, address: d.address, lines: cart.lines, goodsTotal: cart.total });
+      const period = q.period_min ? `${q.period_min}–${q.period_max} дн.` : "";
+      delivery = { price: q.price, text, period };
+      if (cityName) city = cityName;
+      address = text;
+    } catch (e: any) {
+      return json({ error: e?.message || "Не удалось рассчитать доставку" }, 400);
+    }
+  }
+  const deliveryPrice = delivery?.price || 0;
+  const grandTotal = cart.total + deliveryPrice;
+
+  const value = grandTotal.toFixed(2);
   const totalQty = cart.lines.reduce((s, l) => s + l.qty, 0);
 
   // Позиции для чека (54-ФЗ) и для карточки заказа.
@@ -90,10 +122,17 @@ export async function POST(req: Request) {
     .map((l) => `${l.qty}×${l.product.title} — ${money(l.product.price)} (${money(l.product.price * l.qty)})`)
     .join("\n");
   const productSummary =
-    cart.lines.map((l) => `${l.qty}×${l.product.title}`).join(", ") + " — итого " + money(cart.total);
+    cart.lines.map((l) => `${l.qty}×${l.product.title}`).join(", ") +
+    (delivery ? ` + доставка ${money(deliveryPrice)}` : "") +
+    " — итого " + money(grandTotal);
   const commentFull =
     "🛒 Состав заказа:\n" + breakdown +
-    "\nИтого: " + money(cart.total) + " (" + totalQty + " шт.)" +
+    "\nТовары: " + money(cart.total) + " (" + totalQty + " шт.)" +
+    (delivery
+      ? "\n🚚 Доставка: " + delivery.text + " — " + (deliveryPrice ? money(deliveryPrice) : "бесплатно") +
+        (delivery.period ? " (срок " + delivery.period + ")" : "")
+      : "") +
+    "\nИтого к оплате: " + money(grandTotal) +
     (userComment ? "\n\nКомментарий клиента: " + userComment : "") +
     "\n\n✅ ОПЛАЧЕНО ОНЛАЙН (ЮKassa)";
 
@@ -110,7 +149,7 @@ export async function POST(req: Request) {
       city: city || null,
       address: address || null,
       comment: commentFull,
-      amount: cart.total,
+      amount: grandTotal,
       currency: "RUB",
       status: "pending",
     })
@@ -135,6 +174,16 @@ export async function POST(req: Request) {
       payment_mode: "full_payment",
     })),
   };
+  if (deliveryPrice > 0) {
+    receipt.items.push({
+      description: "Доставка СДЭК",
+      quantity: "1.00",
+      amount: { value: deliveryPrice.toFixed(2), currency: "RUB" },
+      vat_code: vatCode,
+      payment_subject: "service",
+      payment_mode: "full_payment",
+    });
+  }
   if (email) receipt.customer.email = email;
   if (phone) receipt.customer.phone = phone;
 
