@@ -1,0 +1,7 @@
+.git
+node_modules
+.next
+salfcard
+supabase
+*.md
+tsconfig.tsbuildinfo
