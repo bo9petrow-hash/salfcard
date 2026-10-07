@@ -3,9 +3,11 @@
  *
  * Ключи — только на сервере, в переменных окружения Timeweb:
  *   CDEK_ACCOUNT, CDEK_SECURE      — ключи интеграции из личного кабинета СДЭК
- *   CDEK_FROM_CITY_CODE            — код города отправки (по умолчанию 44 — Москва)
+ *   CDEK_FROM_CITY_CODE            — код города отправки (по умолчанию 46941 — Химки)
  *   CDEK_EXTRA                     — надбавка к цене доставки, ₽ (по умолчанию 0)
- *   CDEK_FREE_FROM                 — бесплатная доставка от суммы товаров, ₽ (0 — выкл.)
+ *   CDEK_FREE_FROM                 — бесплатная доставка в ПВЗ от суммы товаров, ₽ (по умолчанию 5000; 0 — выкл.)
+ *   CDEK_FREE_CAP                  — сколько максимум доплачиваем за клиента, ₽ (по умолчанию 800):
+ *                                    если доставка дороже (дальние регионы), клиент платит только разницу
  *
  * Пока ключей нет, работает тестовый контур СДЭК (api.edu.cdek.ru) с публичными
  * тестовыми ключами из документации — магазин в этом режиме показывает доставку
@@ -21,9 +23,10 @@ const SECURE = process.env.CDEK_SECURE || "";
 
 export const cdekMode: "prod" | "test" = ACCOUNT && SECURE ? "prod" : "test";
 const BASE = cdekMode === "prod" ? "https://api.cdek.ru/v2" : "https://api.edu.cdek.ru/v2";
-const FROM_CITY = Number(process.env.CDEK_FROM_CITY_CODE || 44);
+const FROM_CITY = Number(process.env.CDEK_FROM_CITY_CODE || 46941);
 const EXTRA = Number(process.env.CDEK_EXTRA || 0);
-export const FREE_FROM = Number(process.env.CDEK_FREE_FROM || 0);
+export const FREE_FROM = Number(process.env.CDEK_FREE_FROM ?? 5000);
+export const FREE_CAP = Number(process.env.CDEK_FREE_CAP ?? 800);
 
 // Тарифы «Посылка» для интернет-магазина: склад-склад (до ПВЗ) и склад-дверь (курьер).
 export const TARIFF_PVZ = 136;
@@ -128,6 +131,8 @@ export function packageFor(lines: CartLine[]) {
 
 export interface Quote {
   price: number;
+  full_price: number;
+  discount: number;
   period_min: number;
   period_max: number;
   tariff: number;
@@ -157,10 +162,16 @@ export async function quote(opts: {
   });
   const raw = Number(data?.total_sum ?? data?.delivery_sum);
   if (!Number.isFinite(raw) || raw <= 0) throw new Error("СДЭК не смог рассчитать доставку в этот город");
-  let price = Math.ceil((raw + EXTRA) / 10) * 10;
-  if (FREE_FROM > 0 && opts.goodsTotal >= FREE_FROM) price = 0;
+  const full = Math.ceil((raw + EXTRA) / 10) * 10;
+  // Бесплатная доставка в ПВЗ от FREE_FROM: оплачиваем за клиента до FREE_CAP ₽.
+  let discount = 0;
+  if (opts.mode === "pvz" && FREE_FROM > 0 && opts.goodsTotal >= FREE_FROM) {
+    discount = Math.min(full, FREE_CAP);
+  }
   return {
-    price,
+    price: full - discount,
+    full_price: full,
+    discount,
     period_min: Number(data?.period_min || 0),
     period_max: Number(data?.period_max || 0),
     tariff,
