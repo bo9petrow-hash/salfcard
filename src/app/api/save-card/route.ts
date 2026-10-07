@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   // Если карта уже существует — она должна принадлежать этому пользователю.
   const { data: existing } = await admin
     .from("cards")
-    .select("owner_id")
+    .select("owner_id, data")
     .eq("slug", slug)
     .maybeSingle();
   if (existing && existing.owner_id && existing.owner_id !== uid) {
@@ -62,6 +62,15 @@ export async function POST(req: Request) {
       { error: "Эта визитка принадлежит другому аккаунту" },
       { status: 403 }
     );
+  }
+
+  // Кабинет получает логотип и фон ссылками /i/... (без base64, см. /api/my-cards).
+  // Если картинку не меняли — пришла та же ссылка: возвращаем исходное значение из базы.
+  for (const field of ["logo", "background"] as const) {
+    const v = (data as any)?.[field];
+    if (typeof v === "string" && v.startsWith("/i/")) {
+      (data as any)[field] = (existing as any)?.data?.[field] ?? undefined;
+    }
   }
 
   const { error } = await admin.from("cards").upsert(
