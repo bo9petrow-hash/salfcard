@@ -76,7 +76,7 @@ export async function POST(req: Request) {
   }
 
   // 2б. Доставка СДЭК: цену и адрес пункта считаем/проверяем на сервере.
-  let delivery: null | { price: number; text: string; period: string } = null;
+  let delivery: null | { price: number; text: string; period: string; meta: Record<string, string> } = null;
   if (body?.delivery && body.delivery.city_code) {
     try {
       const d = body.delivery;
@@ -96,7 +96,19 @@ export async function POST(req: Request) {
       }
       const q = await quote({ cityCode, mode, address: d.address, lines: cart.lines, goodsTotal: cart.total });
       const period = q.period_min ? `${q.period_min}–${q.period_max} дн.` : "";
-      delivery = { price: q.price, text, period };
+      delivery = {
+        price: q.price,
+        text,
+        period,
+        // Для автоматического оформления отправления СДЭК после оплаты (см. вебхук).
+        meta: {
+          dlv_mode: mode,
+          dlv_city: String(cityCode),
+          dlv_pvz: mode === "pvz" ? String(d.pvz_code || "") : "",
+          dlv_addr: mode === "door" ? String(d.address || "").slice(0, 400) : "",
+          dlv_items: cart.lines.map((l) => `${l.product.sku}:${l.qty}`).join(";").slice(0, 500),
+        },
+      };
       if (cityName) city = cityName;
       address = text;
     } catch (e: any) {
@@ -197,7 +209,7 @@ export async function POST(req: Request) {
       value,
       description: `Заказ SELFCARDS №${String(order.id).slice(0, 8)}`,
       returnUrl: `${returnUrl}${returnUrl.includes("?") ? "&" : "?"}order=${order.id}`,
-      metadata: { order_id: String(order.id) },
+      metadata: { order_id: String(order.id), ...(delivery ? delivery.meta : {}) },
       receipt,
     });
   } catch (e: any) {
