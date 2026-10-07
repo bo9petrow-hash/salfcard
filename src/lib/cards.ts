@@ -26,7 +26,7 @@ export function rowToMultilink(row: CardRow): Multilink {
 // главная кабинета) — это ~400 КБ дважды. Одновременные вызовы склеиваем.
 let inflight: { userId: string; at: number; promise: Promise<Multilink[]> } | null = null;
 
-/** Загружает карты текущего владельца. */
+/** Загружает карты текущего владельца (картинки — ссылками, см. /api/my-cards). */
 export async function fetchMyCards(userId: string): Promise<Multilink[]> {
   const supabase = getSupabaseBrowser();
   if (!supabase || !userId) return [];
@@ -34,13 +34,16 @@ export async function fetchMyCards(userId: string): Promise<Multilink[]> {
     return inflight.promise;
   }
   const promise = (async () => {
-    const { data, error } = await supabase
-      .from("cards")
-      .select("slug, type, data, views")
-      .eq("owner_id", userId)
-      .order("created_at", { ascending: true });
-    if (error) throw error;
-    return (data ?? []).map(rowToMultilink);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) throw new Error("Сессия не найдена");
+    const res = await fetch("/api/my-cards", {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Не удалось загрузить визитки");
+    const rows: CardRow[] = await res.json();
+    return (rows ?? []).map(rowToMultilink);
   })();
   inflight = { userId, at: Date.now(), promise };
   promise.catch(() => {
