@@ -6,18 +6,22 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { PrivateSync } from "@/components/PrivateSync";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://selfcards.ru"),
-  title: "SELFCARDS — NFC-визитки",
+  metadataBase: new URL("https://app.selfcards.ru"),
+  title: "SELFCARDS — умные NFC-визитки и таблички для отзывов",
   description:
-    "Умные NFC-визитки SELFCARDS: одним касанием делитесь контактами, ссылками и соцсетями. Визитки для людей и заведений.",
+    "SELFCARDS — NFC-визитки и таблички для отзывов: одно касание телефоном — и ваши контакты, соцсети и ссылки уже у клиента. Работает на iPhone и Android без приложений. Личный кабинет и магазин shop.selfcards.ru.",
+  applicationName: "SELFCARDS",
   openGraph: {
-    title: "SELFCARDS — NFC-визитки",
+    title: "SELFCARDS — умные NFC-визитки",
     description:
-      "Одним касанием — все ваши контакты и ссылки. Визитки для людей и заведений.",
-    url: "https://selfcards.ru",
+      "Одним касанием — все ваши контакты и ссылки. Визитки и таблички для отзывов для людей и заведений.",
+    url: "https://app.selfcards.ru",
     siteName: "SELFCARDS",
     type: "website",
+    locale: "ru_RU",
+    images: [{ url: "https://shop.selfcards.ru/og.png", width: 1200, height: 630 }],
   },
+  twitter: { card: "summary_large_image" },
   verification: {
     yandex: "272ef14fce5643b7",
   },
