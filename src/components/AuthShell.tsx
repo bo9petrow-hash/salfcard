@@ -17,7 +17,9 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <p className="mt-6 text-center text-xs tracking-wide text-slate-500">
-          selfcards.ru
+          <a href="https://shop.selfcards.ru" className="hover:text-slate-300">
+            shop.selfcards.ru
+          </a>
         </p>
       </div>
     </div>

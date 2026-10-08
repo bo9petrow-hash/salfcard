@@ -23,8 +23,10 @@ const MENU_ITEMS = [
   { label: "Настройки", href: "/settings", icon: Settings, external: false },
   { label: "NFC-носители", href: "/nfc", icon: Nfc, external: false },
   {
-    label: "Сайт selfcards.ru",
-    href: "https://selfcards.ru",
+    // Напрямую на магазин: selfcards.ru стоит за Cloudflare, который в РФ
+    // часто не открывается без VPN.
+    label: "Магазин SELFCARDS",
+    href: "https://shop.selfcards.ru",
     icon: Globe,
     external: true,
   },
