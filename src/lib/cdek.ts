@@ -5,7 +5,7 @@
  *   CDEK_ACCOUNT, CDEK_SECURE      — ключи интеграции из личного кабинета СДЭК
  *   CDEK_FROM_CITY_CODE            — код города отправки (по умолчанию 46941 — Химки)
  *   CDEK_EXTRA                     — надбавка к цене доставки, ₽ (по умолчанию 0)
- *   CDEK_FREE_FROM                 — бесплатная доставка в ПВЗ от суммы товаров, ₽ (по умолчанию 5000; 0 — выкл.)
+ *   CDEK_FREE_FROM                 — бесплатная доставка в ПВЗ от суммы товаров, ₽ (по умолчанию 4000; 0 — выкл.)
  *   CDEK_FREE_CAP                  — сколько максимум доплачиваем за клиента, ₽ (по умолчанию 800):
  *                                    если доставка дороже (дальние регионы), клиент платит только разницу
  *
@@ -25,7 +25,7 @@ export const cdekMode: "prod" | "test" = ACCOUNT && SECURE ? "prod" : "test";
 const BASE = cdekMode === "prod" ? "https://api.cdek.ru/v2" : "https://api.edu.cdek.ru/v2";
 const FROM_CITY = Number(process.env.CDEK_FROM_CITY_CODE || 46941);
 const EXTRA = Number(process.env.CDEK_EXTRA || 0);
-export const FREE_FROM = Number(process.env.CDEK_FREE_FROM ?? 5000);
+export const FREE_FROM = Number(process.env.CDEK_FREE_FROM ?? 4000);
 export const FREE_CAP = Number(process.env.CDEK_FREE_CAP ?? 800);
 
 // Тарифы «Посылка» для интернет-магазина: склад-склад (до ПВЗ) и склад-дверь (курьер).

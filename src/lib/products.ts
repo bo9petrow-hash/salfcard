@@ -16,8 +16,8 @@ export const PRODUCTS: Record<string, Product> = {
   card_white_basic: { sku: "card_white_basic", title: "Визитка «Базовый» (белая)", price: 1590 },
   card_black_business: { sku: "card_black_business", title: "Визитка «Бизнес» (чёрная)", price: 1890 },
   card_white_business: { sku: "card_white_business", title: "Визитка «Бизнес» (белая)", price: 1890 },
-  tent_black: { sku: "tent_black", title: "Тейбл-тент (чёрный)", price: 6790 },
-  tent_white: { sku: "tent_white", title: "Тейбл-тент (белый)", price: 6790 },
+  tent_black: { sku: "tent_black", title: "Тейбл-тент (чёрный)", price: 4790 },
+  tent_white: { sku: "tent_white", title: "Тейбл-тент (белый)", price: 4790 },
 };
 
 export interface CartLine {
