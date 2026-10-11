@@ -13,6 +13,8 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://app.selfcards.ru" crossorigin />
+<link rel="dns-prefetch" href="https://mc.yandex.ru" />
 <style>
 :root{
   --grad:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);
@@ -644,7 +646,7 @@ var SHOP_IMG={"black": ["sc-set-black-8643b765.webp", "sc-black-1-af941206.png",
 function shopImgs(cc){ return SHOP_IMG[cc] || SHOP_IMG.black; }
 function carHTML(cc, alt){
   return shopImgs(cc).map(function(s,i){
-    return '<img src="'+s+'"'+(i===0?' class="on"':'')+' alt="'+(alt||'')+'">';
+    return '<img src="'+s+'"'+(i===0?' class="on"':' loading="lazy"')+' decoding="async" alt="'+(alt||'')+'">';
   }).join('');
 }
 function initCarousels(){
