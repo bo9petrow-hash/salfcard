@@ -271,14 +271,17 @@ export function compressImageFile(
     mime?: string;
     quality?: number;
     maxBytes?: number;
+    /** Формат на случай, если браузер не умеет WebP (старые iPhone). */
+    fallbackMime?: string;
   } = {}
 ): Promise<string> {
   const {
     maxDimension = 1200,
-    mime = "image/jpeg",
     quality = 0.82,
     maxBytes = 700_000,
+    fallbackMime = "image/jpeg",
   } = opts;
+  let mime = opts.mime || "image/jpeg";
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -318,7 +321,13 @@ export function compressImageFile(
             const ctx = canvas.getContext("2d");
             if (!ctx) return src;
             ctx.drawImage(img, 0, 0, width, height);
-            return canvas.toDataURL(mime, q);
+            const out = canvas.toDataURL(mime, q);
+            // Браузер без поддержки WebP молча отдаёт PNG — переключаемся на запасной формат.
+            if (!out.startsWith(`data:${mime}`) && mime !== fallbackMime) {
+              mime = fallbackMime;
+              return canvas.toDataURL(mime, q);
+            }
+            return out;
           };
 
           let q = quality;
