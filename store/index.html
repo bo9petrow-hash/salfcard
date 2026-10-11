@@ -244,6 +244,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0}
 .shopcar img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;padding:16px;box-sizing:border-box;opacity:0;transition:opacity .7s ease}
 .shopcar img.on{opacity:1}
 .pdp .gallery{position:relative}
+.tiers{width:100%;max-width:420px;border-collapse:collapse;margin:4px 0 18px;font-size:14px}.tiers td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.08)}.tiers tr:first-child td{border-top:1px solid rgba(255,255,255,.08)}.tiers td:last-child{text-align:right}.colorsw{display:flex;gap:8px;margin:0 0 16px}.colorsw a{padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);color:var(--t2);text-decoration:none;font-size:14px;font-weight:600}.colorsw a.on{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.4)}.tier-hint{color:#86efac;font-size:12.5px;margin-top:4px}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","name":"SELFCARDS","alternateName":"SELFCARD","url":"https://shop.selfcards.ru/","logo":"https://shop.selfcards.ru/icon-512.png","sameAs":["https://t.me/selfcard011"]},{"@type":"WebSite","name":"SELFCARDS","alternateName":["SELFCARD","selfcards.ru"],"url":"https://shop.selfcards.ru/"}]}</script>
 <!-- Yandex.Metrika counter -->
@@ -293,9 +294,15 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0}
       размер как банковская карта, чтение NFC 1–3 см. Сборка заказа до 5 рабочих дней.</p>
     <div class="grid2" id="catalog-grid"></div>
 
-    <h3 style="margin-top:44px;font-size:22px;font-weight:800">Тейбл-тенты для заведений</h3>
+    <h3 style="margin-top:44px;font-size:22px;font-weight:800">Фирменные тейбл-тенты SELFCARD</h3>
     <p class="sub" style="margin-top:8px">Настольная табличка с NFC и QR для кафе, ресторанов и салонов. Гость подносит телефон или сканирует код — открывается ваша страница: меню, отзывы, Wi-Fi, соцсети, оплата.</p>
     <div class="grid2" id="catalog-tent" style="margin-top:20px"></div>
+    <p class="sub" style="margin-top:14px">Оптом дешевле: от 5 шт. — 3 390 ₽, от 10 — 3 190 ₽, от 20 — 2 990 ₽, от 50 — 2 790 ₽ за штуку.</p>
+
+    <h3 style="margin-top:44px;font-size:22px;font-weight:800">Тейбл-тенты «Отзывы на картах»</h3>
+    <p class="sub" style="margin-top:8px">Мини-табличка A6 под Яндекс Карты, 2ГИС или сразу оба сервиса. Гость прикладывает телефон — и сразу оставляет отзыв. Больше отзывов — выше заведение в поиске на картах. Чёрная и белая версии.</p>
+    <div class="grid2" id="catalog-rev" style="margin-top:20px"></div>
+    <p class="sub" style="margin-top:14px">Оптом дешевле: от 5 шт. — 4 290 ₽, от 10 — 3 990 ₽, от 20 — 3 790 ₽, от 50 — 3 490 ₽ за штуку. Можно сочетать разные варианты в одном заказе.</p>
   </section>
 
   <section id="benefits">
@@ -426,14 +433,17 @@ const PRODUCTS = {
   },
   "tent-black": {
     id: "tent-black",
-    name: "Тейбл-тент с NFC + QR — Чёрный",
-    short: "Тейбл-тент · Чёрный",
+    name: "Фирменный тейбл-тент SELFCARD — Чёрный",
+    short: "Фирменный тейбл-тент · Чёрный",
+    family: "brand",
+    pair: "tent-white",
+    specs: ["Формат A5 — 14,8 × 21 см", "Деревянная подставка в комплекте", "NFC + QR-код: открывается на любом смартфоне", "Срок изготовления — до 5 рабочих дней", "Доставка СДЭК по всей России"],
     color: "Чёрный",
     colorClass: "tent",
     img: "tent-black",
     tariff: "Для заведений",
-    price: 4790,
-    old: 6790,
+    price: 3790,
+    old: 4790,
     tagline: "Настольная табличка с NFC и QR для кафе, ресторанов и салонов. Чёрная версия.",
     includes: ["Тейбл-тент с NFC и QR (чёрный)", "Ваше название и логотип", "Первый месяц поддержки и сопровождения"],
     features: [
@@ -446,14 +456,17 @@ const PRODUCTS = {
   },
   "tent-white": {
     id: "tent-white",
-    name: "Тейбл-тент с NFC + QR — Белый",
-    short: "Тейбл-тент · Белый",
+    name: "Фирменный тейбл-тент SELFCARD — Белый",
+    short: "Фирменный тейбл-тент · Белый",
+    family: "brand",
+    pair: "tent-black",
+    specs: ["Формат A5 — 14,8 × 21 см", "Деревянная подставка в комплекте", "NFC + QR-код: открывается на любом смартфоне", "Срок изготовления — до 5 рабочих дней", "Доставка СДЭК по всей России"],
     color: "Белый",
     colorClass: "tent",
     img: "tent-white",
     tariff: "Для заведений",
-    price: 4790,
-    old: 6790,
+    price: 3790,
+    old: 4790,
     tagline: "Настольная табличка с NFC и QR для кафе, ресторанов и салонов. Белая версия.",
     includes: ["Тейбл-тент с NFC и QR (белый)", "Ваше название и логотип", "Первый месяц поддержки и сопровождения"],
     features: [
@@ -463,17 +476,236 @@ const PRODUCTS = {
       "Без бумажных меню — стильно и удобно"
     ],
     desc: "Гость подносит телефон к табличке или сканирует QR — и сразу видит вашу страницу: меню, отзывы, Wi-Fi, соцсети, оплату. Белая версия — стильная замена бумажным меню и табличкам."
+  },
+  "rev-ya-black": {
+      "id": "rev-ya-black",
+      "name": "Тейбл-тент «Отзывы на картах» — Яндекс Карты, чёрный",
+      "short": "Яндекс Карты · Чёрный",
+      "color": "Чёрный",
+      "colorClass": "tent",
+      "img": "rev-ya-black",
+      "tariff": "Отзывы на картах",
+      "family": "rev",
+      "pair": "rev-ya-white",
+      "catalog": true,
+      "price": 4790,
+      "old": 0,
+      "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах.",
+      "includes": [
+          "Тейбл-тент A6 с NFC-меткой (чёрный)",
+          "Деревянная подставка",
+          "Настроим ссылку на отзывы вашего заведения"
+      ],
+      "features": [
+          "Сразу открывает страницу отзывов вашего заведения на Яндекс Картах",
+          "Работает на iPhone и Android без приложений",
+          "Ссылку можно поменять в личном кабинете",
+          "Компактный формат A6 — помещается на любом столике"
+      ],
+      "specs": [
+          "Формат A6 — 10,5 × 14,8 см, скруглённые углы",
+          "Деревянная подставка в комплекте",
+          "NFC-метка: чтение 1–3 см, работает без приложений",
+          "Срок изготовления — до 5 рабочих дней",
+          "Доставка СДЭК по всей России"
+      ],
+      "desc": "Больше отзывов — выше рейтинг и позиции заведения в поиске на картах. Гость прикладывает телефон к табличке, и у него сразу открывается страница отзывов на Яндекс Картах — не нужно ничего искать. Без логотипов и лишнего текста: только понятный призыв оставить отзыв."
+  },
+  "rev-ya-white": {
+      "id": "rev-ya-white",
+      "name": "Тейбл-тент «Отзывы на картах» — Яндекс Карты, белый",
+      "short": "Яндекс Карты · Белый",
+      "color": "Белый",
+      "colorClass": "tent",
+      "img": "rev-ya-white",
+      "tariff": "Отзывы на картах",
+      "family": "rev",
+      "pair": "rev-ya-black",
+      "catalog": false,
+      "price": 4790,
+      "old": 0,
+      "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах.",
+      "includes": [
+          "Тейбл-тент A6 с NFC-меткой (белый)",
+          "Деревянная подставка",
+          "Настроим ссылку на отзывы вашего заведения"
+      ],
+      "features": [
+          "Сразу открывает страницу отзывов вашего заведения на Яндекс Картах",
+          "Работает на iPhone и Android без приложений",
+          "Ссылку можно поменять в личном кабинете",
+          "Компактный формат A6 — помещается на любом столике"
+      ],
+      "specs": [
+          "Формат A6 — 10,5 × 14,8 см, скруглённые углы",
+          "Деревянная подставка в комплекте",
+          "NFC-метка: чтение 1–3 см, работает без приложений",
+          "Срок изготовления — до 5 рабочих дней",
+          "Доставка СДЭК по всей России"
+      ],
+      "desc": "Больше отзывов — выше рейтинг и позиции заведения в поиске на картах. Гость прикладывает телефон к табличке, и у него сразу открывается страница отзывов на Яндекс Картах — не нужно ничего искать. Без логотипов и лишнего текста: только понятный призыв оставить отзыв."
+  },
+  "rev-gis-black": {
+      "id": "rev-gis-black",
+      "name": "Тейбл-тент «Отзывы на картах» — 2ГИС, чёрный",
+      "short": "2ГИС · Чёрный",
+      "color": "Чёрный",
+      "colorClass": "tent",
+      "img": "rev-gis-black",
+      "tariff": "Отзывы на картах",
+      "family": "rev",
+      "pair": "rev-gis-white",
+      "catalog": true,
+      "price": 4790,
+      "old": 0,
+      "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв в 2ГИС.",
+      "includes": [
+          "Тейбл-тент A6 с NFC-меткой (чёрный)",
+          "Деревянная подставка",
+          "Настроим ссылку на отзывы вашего заведения"
+      ],
+      "features": [
+          "Сразу открывает страницу отзывов вашего заведения в 2ГИС",
+          "Работает на iPhone и Android без приложений",
+          "Ссылку можно поменять в личном кабинете",
+          "Компактный формат A6 — помещается на любом столике"
+      ],
+      "specs": [
+          "Формат A6 — 10,5 × 14,8 см, скруглённые углы",
+          "Деревянная подставка в комплекте",
+          "NFC-метка: чтение 1–3 см, работает без приложений",
+          "Срок изготовления — до 5 рабочих дней",
+          "Доставка СДЭК по всей России"
+      ],
+      "desc": "Больше отзывов — выше рейтинг и позиции заведения в поиске на картах. Гость прикладывает телефон к табличке, и у него сразу открывается страница отзывов в 2ГИС — не нужно ничего искать. Без логотипов и лишнего текста: только понятный призыв оставить отзыв."
+  },
+  "rev-gis-white": {
+      "id": "rev-gis-white",
+      "name": "Тейбл-тент «Отзывы на картах» — 2ГИС, белый",
+      "short": "2ГИС · Белый",
+      "color": "Белый",
+      "colorClass": "tent",
+      "img": "rev-gis-white",
+      "tariff": "Отзывы на картах",
+      "family": "rev",
+      "pair": "rev-gis-black",
+      "catalog": false,
+      "price": 4790,
+      "old": 0,
+      "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв в 2ГИС.",
+      "includes": [
+          "Тейбл-тент A6 с NFC-меткой (белый)",
+          "Деревянная подставка",
+          "Настроим ссылку на отзывы вашего заведения"
+      ],
+      "features": [
+          "Сразу открывает страницу отзывов вашего заведения в 2ГИС",
+          "Работает на iPhone и Android без приложений",
+          "Ссылку можно поменять в личном кабинете",
+          "Компактный формат A6 — помещается на любом столике"
+      ],
+      "specs": [
+          "Формат A6 — 10,5 × 14,8 см, скруглённые углы",
+          "Деревянная подставка в комплекте",
+          "NFC-метка: чтение 1–3 см, работает без приложений",
+          "Срок изготовления — до 5 рабочих дней",
+          "Доставка СДЭК по всей России"
+      ],
+      "desc": "Больше отзывов — выше рейтинг и позиции заведения в поиске на картах. Гость прикладывает телефон к табличке, и у него сразу открывается страница отзывов в 2ГИС — не нужно ничего искать. Без логотипов и лишнего текста: только понятный призыв оставить отзыв."
+  },
+  "rev-duo-black": {
+      "id": "rev-duo-black",
+      "name": "Тейбл-тент «Отзывы на картах» — Яндекс Карты + 2ГИС, чёрный",
+      "short": "Яндекс Карты + 2ГИС · Чёрный",
+      "color": "Чёрный",
+      "colorClass": "tent",
+      "img": "rev-duo-black",
+      "tariff": "Отзывы на картах",
+      "family": "rev",
+      "pair": "rev-duo-white",
+      "catalog": true,
+      "price": 4790,
+      "old": 0,
+      "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах или в 2ГИС.",
+      "includes": [
+          "Тейбл-тент A6 с NFC-меткой (чёрный)",
+          "Деревянная подставка",
+          "Настроим ссылку на отзывы вашего заведения"
+      ],
+      "features": [
+          "Гость сам выбирает: Яндекс Карты или 2ГИС — и сразу попадает на отзывы",
+          "Работает на iPhone и Android без приложений",
+          "Ссылку можно поменять в личном кабинете",
+          "Компактный формат A6 — помещается на любом столике"
+      ],
+      "specs": [
+          "Формат A6 — 10,5 × 14,8 см, скруглённые углы",
+          "Деревянная подставка в комплекте",
+          "NFC-метка: чтение 1–3 см, работает без приложений",
+          "Срок изготовления — до 5 рабочих дней",
+          "Доставка СДЭК по всей России"
+      ],
+      "desc": "Больше отзывов — выше рейтинг и позиции заведения в поиске на картах. Гость прикладывает телефон к табличке, и у него сразу открывается страница отзывов на Яндекс Картах или в 2ГИС — не нужно ничего искать. Без логотипов и лишнего текста: только понятный призыв оставить отзыв."
+  },
+  "rev-duo-white": {
+      "id": "rev-duo-white",
+      "name": "Тейбл-тент «Отзывы на картах» — Яндекс Карты + 2ГИС, белый",
+      "short": "Яндекс Карты + 2ГИС · Белый",
+      "color": "Белый",
+      "colorClass": "tent",
+      "img": "rev-duo-white",
+      "tariff": "Отзывы на картах",
+      "family": "rev",
+      "pair": "rev-duo-black",
+      "catalog": false,
+      "price": 4790,
+      "old": 0,
+      "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах или в 2ГИС.",
+      "includes": [
+          "Тейбл-тент A6 с NFC-меткой (белый)",
+          "Деревянная подставка",
+          "Настроим ссылку на отзывы вашего заведения"
+      ],
+      "features": [
+          "Гость сам выбирает: Яндекс Карты или 2ГИС — и сразу попадает на отзывы",
+          "Работает на iPhone и Android без приложений",
+          "Ссылку можно поменять в личном кабинете",
+          "Компактный формат A6 — помещается на любом столике"
+      ],
+      "specs": [
+          "Формат A6 — 10,5 × 14,8 см, скруглённые углы",
+          "Деревянная подставка в комплекте",
+          "NFC-метка: чтение 1–3 см, работает без приложений",
+          "Срок изготовления — до 5 рабочих дней",
+          "Доставка СДЭК по всей России"
+      ],
+      "desc": "Больше отзывов — выше рейтинг и позиции заведения в поиске на картах. Гость прикладывает телефон к табличке, и у него сразу открывается страница отзывов на Яндекс Картах или в 2ГИС — не нужно ничего искать. Без логотипов и лишнего текста: только понятный призыв оставить отзыв."
   }
 };
 
 /* Порядок вывода в каталоге */
-const PRODUCT_ORDER = ["black-business", "black-basic", "white-basic", "white-business", "tent-black", "tent-white"];
+const PRODUCT_ORDER = ["black-business", "black-basic", "white-basic", "white-business", "tent-black", "tent-white", "rev-ya-black", "rev-gis-black", "rev-duo-black"];
 
 /* --- Утилиты --- */
 function money(n) { return n.toLocaleString("ru-RU") + " ₽"; }
 
+/* --- Оптовые цены на тейбл-тенты: скидка по общему количеству в линейке --- */
+const TIERS = {
+  brand: [[1,3790],[5,3390],[10,3190],[20,2990],[50,2790]],
+  rev:   [[1,4790],[5,4290],[10,3990],[20,3790],[50,3490]]
+};
+function famQty(fam, cart){ cart = cart || getCart(); return cart.reduce(function(s,x){ var p=PRODUCTS[x.id]; return p && p.family===fam ? s + x.qty : s; }, 0); }
+function tierFor(fam, q){ var u = TIERS[fam][0][1]; TIERS[fam].forEach(function(t){ if(q>=t[0]) u=t[1]; }); return u; }
+function unitPrice(id, cart){ var p = PRODUCTS[id]; if(!p) return 0; if(!p.family || !TIERS[p.family]) return p.price; return tierFor(p.family, famQty(p.family, cart)); }
+function nextTier(fam, q){ var n=null; TIERS[fam].forEach(function(t){ if(!n && t[0]>q) n=t; }); return n; }
+function tiersTable(fam){
+  var t = TIERS[fam], rows = t.map(function(r,i){ var to = t[i+1] ? (t[i+1][0]-1) : null; var lbl = to ? (r[0]===to ? r[0]+' шт.' : r[0]+'–'+to+' шт.') : ('от '+r[0]+' шт.'); var off = i ? ' <span style="color:#86efac">−'+Math.round((1-r[1]/t[0][1])*100)+'%</span>' : ''; return '<tr><td>'+lbl+'</td><td><b>'+money(r[1])+'</b> / шт.'+off+'</td></tr>'; }).join('');
+  return '<table class="tiers">'+rows+'</table>';
+}
+
+
 /* --- Мини-превью карточки (SVG-макет) --- */
-var SHOP_IMG={"black": ["sc-black-1-af941206.png", "sc-black-2-7ef9d867.png"], "white": ["sc-white-1-dfe0d1d7.png", "sc-white-2-d0d483d5.png"], "tent-black": ["sc-tent-black-1-73185236.png", "sc-tent-black-2-da008489.png"], "tent-white": ["sc-tent-white-1-b57ac488.png", "sc-tent-white-2-e1108314.png"]};
+var SHOP_IMG={"black": ["sc-black-1-af941206.png", "sc-black-2-7ef9d867.png"], "white": ["sc-white-1-dfe0d1d7.png", "sc-white-2-d0d483d5.png"], "tent-black": ["sc-tent-black-1-73185236.png", "sc-tent-black-2-da008489.png"], "tent-white": ["sc-tent-white-1-b57ac488.png", "sc-tent-white-2-e1108314.png"], "rev-ya-black": ["sc-rev-ya-black-1-e5d1b88c.webp", "sc-rev-ya-black-2-7f3efedc.webp"], "rev-ya-white": ["sc-rev-ya-white-1-ee00ede2.webp", "sc-rev-ya-white-2-a326423f.webp"], "rev-gis-black": ["sc-rev-gis-black-1-77cf24df.webp", "sc-rev-gis-black-2-c32695c5.webp"], "rev-gis-white": ["sc-rev-gis-white-1-ecdcc138.webp", "sc-rev-gis-white-2-6d779c88.webp"], "rev-duo-black": ["sc-rev-duo-black-1-878c40e5.webp", "sc-rev-duo-black-2-c38b3a6d.webp"], "rev-duo-white": ["sc-rev-duo-white-1-a8fdc2ab.webp", "sc-rev-duo-white-2-662fc16e.webp"]};
 function shopImgs(cc){ return SHOP_IMG[cc] || SHOP_IMG.black; }
 function carHTML(cc, alt){
   return shopImgs(cc).map(function(s,i){
@@ -534,7 +766,7 @@ function cartCount() {
 }
 function cartTotal() {
   return getCart().reduce(function (s, x) {
-    const p = PRODUCTS[x.id]; return p ? s + p.price * x.qty : s;
+    const p = PRODUCTS[x.id]; return p ? s + unitPrice(x.id) * x.qty : s;
   }, 0);
 }
 function updateCartBadge() {
@@ -571,9 +803,9 @@ async function submitOrder(customer) {
   cart.forEach(function (x) {
     var p = PRODUCTS[x.id];
     if (!p) return;
-    var sum = p.price * x.qty;
+    var up = unitPrice(x.id); var sum = up * x.qty;
     total += sum; totalQty += x.qty;
-    lines.push(x.qty + "×" + p.short + " — " + money(p.price) + " (" + money(sum) + ")");
+    lines.push(x.qty + "×" + p.short + " — " + money(up) + " (" + money(sum) + ")");
   });
 
   var productSummary = cart.map(function (x) {
@@ -725,7 +957,8 @@ function closeTg(){var p=document.getElementById('tgPop');if(p)p.classList.remov
       '<a href="product.html?id='+p.id+'" style="text-decoration:none">'+cardMock(p)+'</a>'+
       '<div class="tags"><span class="pill tag-color">'+p.color+'</span><span class="pill tag-tariff">'+p.tariff+'</span></div>'+
       '<h3><a href="product.html?id='+p.id+'">'+p.short+'</a></h3>'+
-      '<div class="price"><span class="now">'+money(p.price)+'</span></div>'+
+      '<div class="price"><span class="now">'+money(p.price)+'</span>'+(p.old?'<span class="old">'+money(p.old)+'</span>':'')+'</div>'+
+      (p.family?'<div class="tier-hint" style="margin:-8px 0 12px">от '+money(TIERS[p.family][TIERS[p.family].length-1][1])+' / шт. при заказе от '+TIERS[p.family][TIERS[p.family].length-1][0]+' шт.</div>':'')+
       '<ul class="inc">'+inc+'</ul>'+
       '<p class="desc">'+p.desc+'</p>'+
       '<div class="actions">'+
@@ -736,9 +969,11 @@ function closeTg(){var p=document.getElementById('tgPop');if(p)p.classList.remov
   }
   var grid = document.getElementById("catalog-grid");
   var tent = document.getElementById("catalog-tent");
+  var rev = document.getElementById("catalog-rev");
   PRODUCT_ORDER.forEach(function(id){
     var p = PRODUCTS[id];
-    if(p.colorClass==="tent"){ tent.insertAdjacentHTML("beforeend", tentCard(p)); }
+    if(p.family==="rev"){ if(p.catalog) rev.insertAdjacentHTML("beforeend", tentCard(p)); }
+    else if(p.colorClass==="tent"){ tent.insertAdjacentHTML("beforeend", tentCard(p)); }
     else { grid.insertAdjacentHTML("beforeend", productCard(p)); }
   });
   initCarousels();

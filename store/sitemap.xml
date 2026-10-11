@@ -48,4 +48,10 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+<url><loc>https://shop.selfcards.ru/product.html?id=rev-ya-black</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://shop.selfcards.ru/product.html?id=rev-ya-white</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://shop.selfcards.ru/product.html?id=rev-gis-black</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://shop.selfcards.ru/product.html?id=rev-gis-white</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://shop.selfcards.ru/product.html?id=rev-duo-black</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://shop.selfcards.ru/product.html?id=rev-duo-white</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>
