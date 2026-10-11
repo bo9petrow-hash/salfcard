@@ -297,12 +297,10 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0}
     <h3 style="margin-top:44px;font-size:22px;font-weight:800">Фирменные тейбл-тенты SELFCARD</h3>
     <p class="sub" style="margin-top:8px">Настольная табличка с NFC и QR для кафе, ресторанов и салонов. Гость подносит телефон или сканирует код — открывается ваша страница: меню, отзывы, Wi-Fi, соцсети, оплата.</p>
     <div class="grid2" id="catalog-tent" style="margin-top:20px"></div>
-    <p class="sub" style="margin-top:14px">Оптом дешевле: от 5 шт. — 3 390 ₽, от 10 — 3 190 ₽, от 20 — 2 990 ₽, от 50 — 2 790 ₽ за штуку.</p>
 
     <h3 style="margin-top:44px;font-size:22px;font-weight:800">Тейбл-тенты «Отзывы на картах»</h3>
-    <p class="sub" style="margin-top:8px">Мини-табличка A6 под Яндекс Карты, 2ГИС или сразу оба сервиса. Гость прикладывает телефон — и сразу оставляет отзыв. Больше отзывов — выше заведение в поиске на картах. Чёрная и белая версии.</p>
+    <p class="sub" style="margin-top:8px">Мини-табличка A6 сразу для Яндекс Карт и 2ГИС: гость прикладывает телефон и сам выбирает, где оставить отзыв. Больше отзывов — выше заведение в поиске на картах. Чёрная и белая версии.</p>
     <div class="grid2" id="catalog-rev" style="margin-top:20px"></div>
-    <p class="sub" style="margin-top:14px">Оптом дешевле: от 5 шт. — 4 290 ₽, от 10 — 3 990 ₽, от 20 — 3 790 ₽, от 50 — 3 490 ₽ за штуку. Можно сочетать разные варианты в одном заказе.</p>
   </section>
 
   <section id="benefits">
@@ -659,7 +657,7 @@ const PRODUCTS = {
       "tariff": "Отзывы на картах",
       "family": "rev",
       "pair": "rev-duo-black",
-      "catalog": false,
+      "catalog": true,
       "price": 4790,
       "old": 0,
       "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах или в 2ГИС.",
@@ -686,7 +684,7 @@ const PRODUCTS = {
 };
 
 /* Порядок вывода в каталоге */
-const PRODUCT_ORDER = ["black-business", "black-basic", "white-basic", "white-business", "tent-black", "tent-white", "rev-ya-black", "rev-gis-black", "rev-duo-black"];
+const PRODUCT_ORDER = ["black-business", "black-basic", "white-basic", "white-business", "tent-black", "tent-white", "rev-duo-black", "rev-duo-white"];
 
 /* --- Утилиты --- */
 function money(n) { return n.toLocaleString("ru-RU") + " ₽"; }
