@@ -23,10 +23,10 @@ export const TIERS = {
 } as const;
 
 export const PRODUCTS: Record<string, Product> = {
-  card_black_basic: { sku: "card_black_basic", title: "Визитка «Базовый» (чёрная)", price: 1590 },
-  card_white_basic: { sku: "card_white_basic", title: "Визитка «Базовый» (белая)", price: 1590 },
-  card_black_business: { sku: "card_black_business", title: "Визитка «Бизнес» (чёрная)", price: 1890 },
-  card_white_business: { sku: "card_white_business", title: "Визитка «Бизнес» (белая)", price: 1890 },
+  card_black_basic: { sku: "card_black_basic", title: "Набор «Базовый»: NFC-визитка + MagSafe-картхолдер (чёрные)", price: 1590 },
+  card_white_basic: { sku: "card_white_basic", title: "Набор «Базовый»: NFC-визитка + MagSafe-картхолдер (белые)", price: 1590 },
+  card_black_business: { sku: "card_black_business", title: "Набор «Бизнес»: NFC-визитка + MagSafe-картхолдер (чёрные)", price: 1890 },
+  card_white_business: { sku: "card_white_business", title: "Набор «Бизнес»: NFC-визитка + MagSafe-картхолдер (белые)", price: 1890 },
   tent_black: { sku: "tent_black", title: "Фирменный тейбл-тент (чёрный)", price: 3790, family: "brand" },
   tent_white: { sku: "tent_white", title: "Фирменный тейбл-тент (белый)", price: 3790, family: "brand" },
   rev_ya_black: { sku: "rev_ya_black", title: "Тейбл-тент «Отзывы на картах» Яндекс Карты (чёрный)", price: 4790, family: "rev" },

@@ -112,7 +112,7 @@ export async function getPoints(cityCode: number): Promise<Point[]> {
 
 // Упаковка товаров: вес (г) и размеры коробки (см). Подправьте под реальные.
 export const PACK: Record<string, { w: number; l: number; wd: number; h: number }> = {
-  card: { w: 100, l: 15, wd: 10, h: 2 },
+  card: { w: 160, l: 15, wd: 10, h: 3 },
   tent: { w: 600, l: 25, wd: 20, h: 8 },
   mini: { w: 350, l: 18, wd: 14, h: 6 }, // тейбл-тент A6 «Отзывы на картах»
 };
