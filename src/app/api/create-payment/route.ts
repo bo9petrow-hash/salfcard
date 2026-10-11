@@ -218,8 +218,12 @@ export async function POST(req: Request) {
   if (email) receipt.customer.email = email;
   if (phoneE164) receipt.customer.phone = phoneE164;
 
-  const returnUrl =
-    process.env.YOOKASSA_RETURN_URL || "https://shop.selfcards.ru/?paid=1";
+  // Возврат после оплаты — на /index.html, а не на «/»: CDN магазина отвечает 403
+  // на «/» с длинными параметрами (а мы добавляем order=<uuid>), и покупатель
+  // после оплаты мог увидеть ошибку вместо магазина.
+  const returnUrl = (
+    process.env.YOOKASSA_RETURN_URL || "https://shop.selfcards.ru/index.html?paid=1"
+  ).replace(/^(https:\/\/shop\.selfcards\.ru)\/?(\?|$)/, "$1/index.html$2");
 
   // 5. Создаём платёж в ЮKassa.
   let payment: any;
