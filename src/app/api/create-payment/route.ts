@@ -25,6 +25,18 @@ function corsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
+/**
+ * Телефон для чека ЮKassa — только цифры в международном формате (79001234567).
+ * Покупатели пишут «8 (900) 123-45-67», «+7 900…», «900…» — приводим к одному виду.
+ * Раньше номер уходил как есть — ЮKassa могла отклонить платёж с непонятной ошибкой.
+ */
+function normPhone(raw: string): string {
+  let d = raw.replace(/\D/g, "");
+  if (d.length === 11 && d.startsWith("8")) d = "7" + d.slice(1);
+  if (d.length === 10 && d.startsWith("9")) d = "7" + d;
+  return d.length >= 11 && d.length <= 15 ? d : "";
+}
+
 // Форматирование суммы без зависимости от локали: "1 590 ₽".
 function money(n: number): string {
   return Math.round(n)
@@ -71,6 +83,13 @@ export async function POST(req: Request) {
   let city = String(body?.customer?.city || "").trim().slice(0, 120);
   let address = String(body?.customer?.address || "").trim().slice(0, 300);
   const userComment = String(body?.customer?.comment || "").trim().slice(0, 500);
+  const phoneE164 = phone ? normPhone(phone) : "";
+  if (phone && !phoneE164) {
+    return json({ error: "Проверьте номер телефона — например, +7 900 123-45-67" }, 400);
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return json({ error: "Проверьте email — например, name@mail.ru" }, 400);
+  }
   if (!phone && !email) {
     return json({ error: "Укажите телефон или email для связи" }, 400);
   }
@@ -197,7 +216,7 @@ export async function POST(req: Request) {
     });
   }
   if (email) receipt.customer.email = email;
-  if (phone) receipt.customer.phone = phone;
+  if (phoneE164) receipt.customer.phone = phoneE164;
 
   const returnUrl =
     process.env.YOOKASSA_RETURN_URL || "https://shop.selfcards.ru/?paid=1";
