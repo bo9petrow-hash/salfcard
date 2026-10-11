@@ -2,8 +2,17 @@
 
 import { usePathname } from "next/navigation";
 
-import { ProfileSync } from "@/components/ProfileSync";
-import { CardsSync } from "@/components/CardsSync";
+import dynamic from "next/dynamic";
+
+// Отдельные файлы: на публичной визитке они (и библиотека Supabase) не грузятся.
+const ProfileSync = dynamic(
+  () => import("@/components/ProfileSync").then((m) => m.ProfileSync),
+  { ssr: false }
+);
+const CardsSync = dynamic(
+  () => import("@/components/CardsSync").then((m) => m.CardsSync),
+  { ssr: false }
+);
 
 /**
  * Синхронизация профиля и карт нужна только в кабинете. На публичной визитке

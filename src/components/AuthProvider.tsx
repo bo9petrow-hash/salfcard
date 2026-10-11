@@ -4,10 +4,14 @@ import {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
-import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
+import { usePathname } from "next/navigation";
+
+// Проверяем настройки по переменным сборки (без импорта библиотеки Supabase).
+const isSupabaseConfigured = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 interface AuthResult {
   ok: boolean;
@@ -51,35 +55,58 @@ function translateError(message: string): string {
   return message;
 }
 
+/** Клиент Supabase подгружается отдельным файлом только когда нужен. */
+const loadClient = () =>
+  import("@/lib/supabaseBrowser").then((m) => m.getSupabaseBrowser());
+
+/** На публичной визитке вход не нужен — библиотеку авторизации не грузим вовсе. */
+const isPublicPath = (p: string) => p.startsWith("/p/") || p.startsWith("/i/");
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const supabase = useMemo(() => getSupabaseBrowser(), []);
+  const pathname = usePathname() || "";
   const [email, setEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const publicPage = isPublicPath(pathname);
 
   useEffect(() => {
-    if (!supabase) {
+    if (publicPage) {
       setLoading(false);
       return;
     }
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setEmail(data.session?.user?.email ?? null);
-      setUserId(data.session?.user?.id ?? null);
-      setLoading(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setEmail(session?.user?.email ?? null);
-      setUserId(session?.user?.id ?? null);
-    });
+    let unsubscribe: (() => void) | null = null;
+    setLoading(true);
+    loadClient()
+      .then((supabase) => {
+        if (!mounted) return;
+        if (!supabase) {
+          setLoading(false);
+          return;
+        }
+        supabase.auth.getSession().then(({ data }) => {
+          if (!mounted) return;
+          setEmail(data.session?.user?.email ?? null);
+          setUserId(data.session?.user?.id ?? null);
+          setLoading(false);
+        });
+        const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+          setEmail(session?.user?.email ?? null);
+          setUserId(session?.user?.id ?? null);
+        });
+        unsubscribe = () => sub.subscription.unsubscribe();
+      })
+      .catch(() => {
+        if (mounted) setLoading(false);
+      });
     return () => {
       mounted = false;
-      sub.subscription.unsubscribe();
+      if (unsubscribe) unsubscribe();
     };
-  }, [supabase]);
+  }, [publicPage]);
 
   const signIn = async (em: string, password: string): Promise<AuthResult> => {
+    const supabase = await loadClient();
     if (!supabase) return { ok: false, message: "Авторизация недоступна." };
     const { error } = await supabase.auth.signInWithPassword({
       email: em.trim().toLowerCase(),
@@ -90,6 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (em: string, password: string): Promise<AuthResult> => {
+    const supabase = await loadClient();
     if (!supabase) return { ok: false, message: "Авторизация недоступна." };
     const { data, error } = await supabase.auth.signUp({
       email: em.trim().toLowerCase(),
@@ -109,10 +137,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    const supabase = await loadClient();
     if (supabase) await supabase.auth.signOut();
   };
 
   const resetPassword = async (em: string): Promise<AuthResult> => {
+    const supabase = await loadClient();
     if (!supabase) return { ok: false, message: "Авторизация недоступна." };
     const redirectTo =
       typeof window !== "undefined"
@@ -127,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updatePassword = async (password: string): Promise<AuthResult> => {
+    const supabase = await loadClient();
     if (!supabase) return { ok: false, message: "Авторизация недоступна." };
     const { error } = await supabase.auth.updateUser({ password });
     if (error) return { ok: false, message: translateError(error.message) };
@@ -137,7 +168,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email,
     userId,
     loading,
-    configured: Boolean(supabase),
+    // Берём из настроек сборки, а не из наличия клиента: на сервере клиента нет,
+    // и раньше сервер рисовал страницу кабинета, а браузер — загрузку. Из-за
+    // этого React перерисовывал всё заново (ошибки гидратации #418/#423).
+    configured: isSupabaseConfigured,
     signIn,
     signUp,
     signOut,
