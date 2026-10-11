@@ -699,19 +699,21 @@ function UploadField({
     setUploadError("");
     setBusy(true);
     try {
-      // Логотип — небольшой PNG (сохраняем прозрачность), фон — сжатый JPEG.
+      // WebP: логотип с прозрачностью и фон весят в 2–4 раза меньше, чем PNG/JPEG.
       const dataUrl =
         preview === "logo"
           ? await compressImageFile(file, {
               maxDimension: 256,
-              mime: "image/png",
-              maxBytes: 110_000,
+              mime: "image/webp",
+              fallbackMime: "image/png",
+              quality: 0.85,
+              maxBytes: 60_000,
             })
           : await compressImageFile(file, {
               maxDimension: 900,
-              mime: "image/jpeg",
+              mime: "image/webp",
               quality: 0.72,
-              maxBytes: 220_000,
+              maxBytes: 140_000,
             });
       onPick(dataUrl);
     } catch (err: any) {
