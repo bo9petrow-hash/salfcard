@@ -114,13 +114,19 @@ export async function getPoints(cityCode: number): Promise<Point[]> {
 export const PACK: Record<string, { w: number; l: number; wd: number; h: number }> = {
   card: { w: 100, l: 15, wd: 10, h: 2 },
   tent: { w: 600, l: 25, wd: 20, h: 8 },
+  mini: { w: 350, l: 18, wd: 14, h: 6 }, // тейбл-тент A6 «Отзывы на картах»
 };
+
+/** Тип упаковки по артикулу. */
+export function packOf(sku: string) {
+  return PACK[sku.startsWith("tent") ? "tent" : sku.startsWith("rev") ? "mini" : "card"];
+}
 
 /** Одна посылка на весь заказ: вес — сумма, размеры — по самой большой коробке, высота — стопкой. */
 export function packageFor(lines: CartLine[]) {
   let weight = 0, length = 10, width = 10, height = 0;
   for (const l of lines) {
-    const p = PACK[l.product.sku.startsWith("tent") ? "tent" : "card"];
+    const p = packOf(l.product.sku);
     weight += p.w * l.qty;
     length = Math.max(length, p.l);
     width = Math.max(width, p.wd);
@@ -234,7 +240,7 @@ export async function createShipment(inp: ShipmentInput): Promise<{ uuid: string
           ware_key: l.product.sku,
           payment: { value: 0 }, // уже оплачено онлайн
           cost: l.product.price,
-          weight: PACK[l.product.sku.startsWith("tent") ? "tent" : "card"].w,
+          weight: packOf(l.product.sku).w,
           amount: l.qty,
         })),
       },
