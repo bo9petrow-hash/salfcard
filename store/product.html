@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script>(function(){var h=location.hostname;if(h!=="shop.selfcards.ru"&&h!=="localhost"&&h!=="127.0.0.1"&&h.indexOf("selfcards.ru")===-1){location.replace("https://shop.selfcards.ru"+location.pathname+location.search+location.hash);}})();</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Товар — SELFCARDS</title>
+<meta name="description" content="Умные NFC-визитки SELFCARD. Полное описание товара, характеристики и заказ с доставкой по России." />
+<meta name="theme-color" content="#0B0F1E" />
+<link rel="canonical" href="https://shop.selfcards.ru/product.html" />
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<style>
+:root{
+  --grad:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);
+  --brand:#60a5fa;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.16);
+  --t1:#fff;--t2:#cbd5e1;--t3:#94a3b8;--t4:#64748b;--radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--t1);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(139,92,246,.18), transparent 60%),
+    radial-gradient(1000px 500px at 0% 10%, rgba(59,130,246,.16), transparent 55%),
+    linear-gradient(180deg,#0B0F1E 0%,#141a2e 100%);
+  background-attachment:fixed;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.glass{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,.35);backdrop-filter:blur(12px)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer;border:none;text-decoration:none;padding:12px 22px;color:#fff}
+.btn-grad{background:var(--grad);box-shadow:0 8px 24px rgba(59,130,246,.35)}
+.btn-grad:hover{filter:brightness(1.07)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--line2);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.09)}
+.btn:disabled{opacity:.6;cursor:default}
+.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--brand)}
+.pill{border-radius:999px;padding:5px 12px;font-size:12px}
+
+/* NAV */
+nav{border-bottom:1px solid var(--line);background:#0B0F1E}
+.nav-in{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:.3px;text-decoration:none;color:#fff}
+.logo .mark{width:34px;height:34px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.nav-actions a.link{color:var(--t2);text-decoration:none;font-size:14px;padding:8px 12px}
+.nav-actions a.link:hover{color:#fff}
+@media(max-width:640px){.nav-actions a.link{display:none}}
+.cart-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid var(--line2);text-decoration:none}
+.cart-btn:hover{background:rgba(255,255,255,.09)}
+.cart-btn svg{width:20px;height:20px;stroke:#fff}
+.cart-count{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--grad);color:#fff;font-size:11.5px;font-weight:700;display:none;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(59,130,246,.5)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 0 60px}
+.hero h1{font-size:52px;line-height:1.05;font-weight:800;margin:20px auto;max-width:760px;letter-spacing:-.5px}
+.hero p{color:var(--t2);font-size:18px;max-width:620px;margin:0 auto 32px;line-height:1.6}
+.hero .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+section{padding:44px 0}
+h2{font-size:34px;font-weight:800;letter-spacing:-.3px}
+.sub{color:var(--t3);margin-top:10px;font-size:15px;max-width:660px;line-height:1.6}
+
+/* CATALOG */
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:28px}
+.prod{padding:22px;display:flex;flex-direction:column}
+.prod .cardimg{height:150px;border-radius:14px;margin-bottom:18px;display:flex;align-items:center;justify-content:center}
+.cardimg.black{background:linear-gradient(135deg,#1f2430,#0d1017)}
+.cardimg.white{background:linear-gradient(135deg,#eef2f7,#cdd6e4)}
+.minicard{width:150px;height:94px;border-radius:12px;background:var(--grad);position:relative;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+.minicard .m{position:absolute;top:12px;left:14px;width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;color:#3b82f6;font-weight:800}
+.minicard .txt{position:absolute;bottom:12px;left:14px;color:#fff;font-weight:800;font-size:13px;letter-spacing:.4px}
+.tentmock{width:98px;height:114px;background:#fff;border-radius:12px 12px 6px 6px;box-shadow:0 12px 26px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;transform:perspective(320px) rotateX(6deg)}
+.prod .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tag-color{background:rgba(255,255,255,.1);color:#e2e8f0}
+.tag-tariff{background:rgba(59,130,246,.16);color:var(--brand);font-weight:600}
+.prod h3{font-size:16px;font-weight:700;margin-bottom:12px}
+.prod h3 a{text-decoration:none}
+.prod h3 a:hover{color:var(--brand)}
+.price{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+.price .now{font-size:26px;font-weight:800}
+.price .old{color:var(--t4);text-decoration:line-through;font-size:15px}
+.inc{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.inc li{display:flex;align-items:center;gap:8px;color:var(--t2);font-size:14px}
+.inc .dot{color:var(--brand)}
+.prod .desc{color:var(--t3);font-size:12.5px;line-height:1.55;flex:1;margin-bottom:18px}
+.prod .actions{display:flex;gap:10px}
+.prod .actions .btn{flex:1;padding:11px 10px;font-size:14px}
+
+/* BENEFITS */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+.ben{padding:22px}
+.ben .ic{width:44px;height:44px;border-radius:12px;background:var(--grad);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
+.ben h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.ben p{color:var(--t3);font-size:14px;line-height:1.6}
+
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.step .num{width:34px;height:34px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;margin-bottom:12px}
+.step h3{font-size:15px;margin-bottom:6px;color:#fff}
+.step p{color:var(--t3);font-size:13px;line-height:1.55}
+@media(max-width:760px){.steps{grid-template-columns:1fr 1fr}}
+
+/* FAQ */
+.faq{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 18px}
+.faq summary{cursor:pointer;padding:16px 0;font-weight:600;color:#fff;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--brand);font-size:20px;flex:0 0 auto}
+.faq details[open] summary::after{content:"–"}
+.faq details p{color:var(--t3);font-size:13.5px;line-height:1.6;padding:0 0 16px;margin:0}
+
+/* FORMS */
+label{display:block;font-size:13px;color:var(--t2);margin:14px 0 7px}
+input,select,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;color:#fff;font-size:14px;font-family:inherit;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+input::placeholder,textarea::placeholder{color:#64748b}
+select option{background:#0B0F1E}
+textarea{min-height:84px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.note{color:var(--t4);font-size:12px;text-align:center;margin-top:12px;line-height:1.5}
+.msg{border-radius:12px;padding:12px 14px;font-size:14px;margin-top:14px}
+.msg.err{background:rgba(239,68,68,.12);color:#fca5a5}
+.ok-box{text-align:center;padding:34px 22px}
+.ok-box .circle{width:52px;height:52px;border-radius:50%;background:rgba(16,185,129,.15);color:#6ee7b7;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px}
+
+/* BREADCRUMB */
+.crumb{display:flex;gap:8px;align-items:center;color:var(--t4);font-size:13px;padding-top:22px}
+.crumb a{color:var(--t3);text-decoration:none}
+.crumb a:hover{color:#fff}
+
+/* PRODUCT PAGE */
+.pdp{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:24px;align-items:start}
+.pdp .gallery{height:360px;border-radius:18px;display:flex;align-items:center;justify-content:center}
+.pdp .gallery .minicard{width:230px;height:144px}
+.pdp .gallery .minicard .m{width:38px;height:38px;top:16px;left:18px}
+.pdp .gallery .minicard .txt{font-size:18px;bottom:16px;left:18px}
+.pdp .gallery .tentmock{width:150px;height:176px}
+.pdp h1{font-size:30px;font-weight:800;line-height:1.15;margin:8px 0 12px;letter-spacing:-.3px}
+.pdp .tagline{color:var(--t2);font-size:15px;line-height:1.6;margin-bottom:18px}
+.pdp .price{margin:6px 0 20px}
+.pdp .price .now{font-size:34px}
+.pdp .price .old{font-size:18px}
+.pdp .block-title{font-size:14px;font-weight:700;color:#fff;margin:22px 0 10px}
+.pdp .qtyrow{display:flex;align-items:center;gap:14px;margin:22px 0 16px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+.qty button{width:42px;height:44px;background:rgba(255,255,255,.05);border:none;color:#fff;font-size:20px;cursor:pointer}
+.qty button:hover{background:rgba(255,255,255,.1)}
+.qty input{width:52px;height:44px;text-align:center;border:none;border-left:1px solid var(--line2);border-right:1px solid var(--line2);border-radius:0;padding:0;background:transparent}
+.pdp .buyrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.pdp .buyrow .btn{flex:1;min-width:160px;padding:14px}
+.spec{list-style:none;display:flex;flex-direction:column;gap:9px}
+.spec li{display:flex;gap:9px;color:var(--t2);font-size:14px;line-height:1.5}
+.spec .dot{color:var(--brand);flex:0 0 auto}
+.trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:20px;color:var(--t3);font-size:13px}
+.trust span{display:inline-flex;align-items:center;gap:7px}
+
+/* CART PAGE */
+.cart-wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:26px;margin-top:24px;align-items:start}
+.cart-item{display:flex;gap:16px;padding:16px;align-items:center}
+.cart-item .thumb{width:96px;height:64px;flex:0 0 auto;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.cart-item .thumb .minicard{width:78px;height:49px;box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.cart-item .thumb .minicard .m{width:16px;height:16px;top:7px;left:8px}
+.cart-item .thumb .minicard .txt{font-size:8px;bottom:7px;left:8px}
+.cart-item .thumb .tentmock{width:44px;height:52px;gap:4px}
+.cart-item .thumb .tentmock svg{width:16px;height:16px}
+.cart-item .ci-main{flex:1;min-width:0}
+.cart-item .ci-name{font-weight:700;font-size:14.5px;margin-bottom:4px}
+.cart-item .ci-tags{color:var(--t3);font-size:12.5px}
+.cart-item .ci-price{font-weight:800;font-size:16px;white-space:nowrap}
+.cart-item .qty button{width:34px;height:36px;font-size:18px}
+.cart-item .qty input{width:40px;height:36px}
+.ci-remove{background:none;border:none;color:var(--t4);cursor:pointer;font-size:13px;margin-top:6px;padding:0}
+.ci-remove:hover{color:#fca5a5}
+.summary{padding:24px;position:sticky;top:86px}
+.sumrow{display:flex;justify-content:space-between;color:var(--t2);font-size:14px;margin-bottom:10px}
+.sumrow.total{color:#fff;font-size:20px;font-weight:800;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.empty-cart{text-align:center;padding:60px 20px;color:var(--t3)}
+.empty-cart .big{font-size:44px;margin-bottom:14px}
+@media(max-width:860px){.pdp,.cart-wrap{grid-template-columns:1fr}.summary{position:static}}
+@media(max-width:560px){
+  .cart-item{flex-wrap:wrap;gap:12px}
+  .cart-item .thumb{width:70px;height:46px}
+  .cart-item .ci-main{flex:1 1 auto;min-width:0}
+  .cart-item .ci-name{white-space:normal}
+  .cart-item .qty{order:3}
+  .cart-item .ci-price{order:4;margin-left:auto;align-self:center}
+}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);margin-top:40px;padding:28px 0}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--t3);font-size:14px}
+.foot a{color:var(--t3);text-decoration:none}.foot a:hover{color:#fff}
+
+@media(max-width:760px){.hero h1{font-size:34px}.hero p{font-size:16px}h2{font-size:26px}.grid2,.grid3,.row{grid-template-columns:1fr}.pdp h1{font-size:24px}.wrap{padding-left:22px;padding-right:22px}.nav-in{padding-top:16px;padding-bottom:16px}}
+
+/* DOC MODALS */
+.doc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 16px;overflow-y:auto}
+.doc-overlay.open{display:flex}
+.doc-modal{background:#141a2e;border:1px solid rgba(255,255,255,.12);border-radius:18px;max-width:720px;width:100%;padding:28px;color:var(--t2);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.doc-modal h2{color:#fff;font-size:22px;margin-bottom:4px}
+.doc-modal h3{color:#fff;font-size:15px;margin:18px 0 6px}
+.doc-modal p{font-size:13.5px;line-height:1.65;margin-bottom:8px}
+.doc-modal ul{margin:0 0 10px 18px}
+.doc-modal li{font-size:13.5px;line-height:1.6;margin-bottom:4px}
+.doc-close{float:right;cursor:pointer;color:var(--t3);font-size:26px;line-height:1;border:none;background:none}
+.doc-date{color:var(--t4);font-size:12px;margin-bottom:16px}
+
+/* TOAST */
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#141a2e;border:1px solid var(--line2);border-radius:14px;padding:14px 20px;color:#fff;font-size:14px;font-weight:600;box-shadow:0 16px 40px rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:10px}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast .ok{color:#6ee7b7}
+
+/* TELEGRAM POPUP */
+.tg-pop{position:fixed;left:16px;right:16px;bottom:16px;max-width:380px;margin:0 auto;background:#141a2e;border:1px solid var(--line2);border-radius:18px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.55);z-index:120;display:none}
+.tg-pop.show{display:block;animation:tgUp .4s ease}
+@keyframes tgUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.tg-pop h4{color:#fff;font-size:16px;margin-bottom:6px}
+.tg-pop p{color:var(--t3);font-size:13px;line-height:1.5;margin-bottom:14px}
+.tg-pop .tg-row{display:flex;gap:10px;align-items:center}
+.tg-close-x{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer}
+
+/* BACK TO TOP */
+.to-top{position:fixed;right:16px;bottom:16px;width:46px;height:46px;border-radius:12px;background:var(--grad);border:none;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px rgba(59,130,246,.45);z-index:90}
+.to-top.show{display:flex}
+.to-top svg{width:22px;height:22px;stroke:#fff;fill:none}
+
+.cardimg.shopcar{position:relative}
+.shopcar img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;padding:16px;box-sizing:border-box;opacity:0;transition:opacity .7s ease}
+.shopcar img.on{opacity:1}
+.pdp .gallery{position:relative}
+</style>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(113596454,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});window.scGoal=function(g,p){try{ym(113596454,"reachGoal",g,p||{});}catch(e){}};</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/113596454" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="logo" href="index.html"><span class="mark"><svg viewBox="0 0 24 24" width="58%" height="58%" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"><path d="M6 8.5 A6 6 0 0 1 6 15.5"/><path d="M9 6 A10 10 0 0 1 9 18"/><path d="M12 3.5 A14 14 0 0 1 12 20.5"/><circle cx="4" cy="12" r="1.4" fill="#fff" stroke="none"/></svg></span> SELFCARD</a>
+    <div class="nav-actions">
+      <a class="link" href="index.html#catalog">Каталог</a>
+      <a class="link" href="index.html#benefits">Преимущества</a>
+      <a class="cart-btn" href="cart.html" aria-label="Корзина"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="cart-count">0</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">Главная</a> › <a href="index.html#catalog">Каталог</a> › <span id="crumb-name">Товар</span></div>
+  <div id="pdp"></div>
+
+  <section>
+    <h2 style="font-size:26px">Почему SELFCARD</h2>
+    <div class="grid3">
+      <div class="glass ben"><div class="ic">⚡</div><h3>Одно касание</h3><p>Поднеси карту к телефону — открывается страница со всеми контактами и ссылками.</p></div>
+      <div class="glass ben"><div class="ic">♻</div><h3>Меняйте данные онлайн</h3><p>Контакты и ссылки редактируются в кабинете в любой момент — без перевыпуска карты.</p></div>
+      <div class="glass ben"><div class="ic">🚚</div><h3>Доставка</h3><p>Отправляем по всей России. Изготовление — до 5 рабочих дней.</p></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="index.html" style="font-size:16px"><span class="mark" style="width:28px;height:28px"><svg viewBox="0 0 24 24" width="58%" height="58%" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"><path d="M6 8.5 A6 6 0 0 1 6 15.5"/><path d="M9 6 A10 10 0 0 1 9 18"/><path d="M12 3.5 A14 14 0 0 1 12 20.5"/><circle cx="4" cy="12" r="1.4" fill="#fff" stroke="none"/></svg></span> SELFCARD</a>
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <a href="https://t.me/selfcard011" target="_blank" rel="noreferrer">Поддержка</a>
+      <a href="#" onclick="openDoc('doc-privacy');return false;">Политика</a>
+      <a href="#" onclick="openDoc('doc-offer');return false;">Оферта</a>
+      <a href="rekvizity.html">Реквизиты</a>
+    </div>
+    <div style="color:#64748b;font-size:13px">© 2026 SELFCARD</div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   SELFCARD — общий модуль магазина: товары + корзина + заказ
+   Подключается на всех страницах: index.html, product.html, cart.html
+   ============================================================ */
+
+/* --- Настройки Supabase (публичный ключ, безопасно) --- */
+const SUPABASE_URL = "https://scduauxcvcjxdcxrroex.supabase.co";
+const SUPABASE_KEY = "sb_publishable_uwO-DkLznTTLCBKWknkpBw_ey6Xs73d";
+
+/* --- Каталог товаров (единый источник данных) --- */
+const PRODUCTS = {
+  "black-business": {
+    id: "black-business",
+    name: "Умная NFC-визитка — Чёрный, тариф «Бизнес»",
+    short: "Чёрный · Бизнес",
+    color: "Чёрный",
+    colorClass: "black",
+    tariff: "Бизнес",
+    price: 1890,
+    old: 2390,
+    tagline: "Умная NFC-визитка с QR-кодом. Безлимит визиток и фирменное оформление.",
+    includes: ["Умная NFC-визитка (чёрная)", "QR-код на карте — если у телефона нет NFC", "Доступ в личный кабинет"],
+    features: [
+      "Безлимитное количество визиток",
+      "Загрузка логотипа, фона и аватара",
+      "Все блоки: контакты, соцсети, кнопка действия, «Обо мне»",
+      "Смена данных в любой момент без перевыпуска карты"
+    ],
+    desc: "Максимальная версия визитки. Всё как в «Базовом», но без ограничений: делайте сколько угодно визиток и оформляйте страницу под свой бренд — с логотипом, фоном и аватаром. Солиднее любой бумажной визитки."
+  },
+  "black-basic": {
+    id: "black-basic",
+    name: "Умная NFC-визитка — Чёрный, тариф «Базовый»",
+    short: "Чёрный · Базовый",
+    color: "Чёрный",
+    colorClass: "black",
+    tariff: "Базовый",
+    price: 1590,
+    old: 1890,
+    tagline: "Умная NFC-визитка с QR-кодом. Все основные блоки визитки.",
+    includes: ["Умная NFC-визитка (чёрная)", "QR-код на карте — если у телефона нет NFC", "Доступ в личный кабинет"],
+    features: [
+      "До 2 визиток",
+      "Контакты, соцсети, кнопка действия, «Обо мне»",
+      "Смена данных в любой момент без перевыпуска карты",
+      "Логотип и фон — недоступны (есть в «Бизнес»)"
+    ],
+    desc: "Оптимальный старт. Все основные блоки визитки и до 2 визиток на аккаунт. Контакты и ссылки редактируются в кабинете в любой момент."
+  },
+  "white-basic": {
+    id: "white-basic",
+    name: "Умная NFC-визитка — Белый, тариф «Базовый»",
+    short: "Белый · Базовый",
+    color: "Белый",
+    colorClass: "white",
+    tariff: "Базовый",
+    price: 1590,
+    old: 1890,
+    tagline: "Умная NFC-визитка с QR-кодом. Все основные блоки визитки.",
+    includes: ["Умная NFC-визитка (белая)", "QR-код на карте — если у телефона нет NFC", "Доступ в личный кабинет"],
+    features: [
+      "До 2 визиток",
+      "Контакты, соцсети, кнопка действия, «Обо мне»",
+      "Смена данных в любой момент без перевыпуска карты",
+      "Логотип и фон — недоступны (есть в «Бизнес»)"
+    ],
+    desc: "Светлая версия визитки. Все основные блоки визитки и до 2 визиток на аккаунт. Контакты и ссылки редактируются в кабинете в любой момент."
+  },
+  "white-business": {
+    id: "white-business",
+    name: "Умная NFC-визитка — Белый, тариф «Бизнес»",
+    short: "Белый · Бизнес",
+    color: "Белый",
+    colorClass: "white",
+    tariff: "Бизнес",
+    price: 1890,
+    old: 2390,
+    tagline: "Умная NFC-визитка с QR-кодом. Безлимит визиток и фирменное оформление.",
+    includes: ["Умная NFC-визитка (белая)", "QR-код на карте — если у телефона нет NFC", "Доступ в личный кабинет"],
+    features: [
+      "Безлимитное количество визиток",
+      "Загрузка логотипа, фона и аватара",
+      "Все блоки: контакты, соцсети, кнопка действия, «Обо мне»",
+      "Смена данных в любой момент без перевыпуска карты"
+    ],
+    desc: "Максимальная версия визитки в светлом цвете. Безлимит визиток и фирменное оформление страницы — логотип, фон, аватар. Солиднее любой бумажной визитки."
+  },
+  "tent-black": {
+    id: "tent-black",
+    name: "Тейбл-тент с NFC + QR — Чёрный",
+    short: "Тейбл-тент · Чёрный",
+    color: "Чёрный",
+    colorClass: "tent",
+    img: "tent-black",
+    tariff: "Для заведений",
+    price: 4790,
+    old: 6790,
+    tagline: "Настольная табличка с NFC и QR для кафе, ресторанов и салонов. Чёрная версия.",
+    includes: ["Тейбл-тент с NFC и QR (чёрный)", "Ваше название и логотип", "Первый месяц поддержки и сопровождения"],
+    features: [
+      "NFC и QR — открывается на любом смартфоне",
+      "Ваша страница: меню, отзывы, Wi-Fi, соцсети, оплата",
+      "Брендирование под ваше заведение",
+      "Без бумажных меню — стильно и удобно"
+    ],
+    desc: "Гость подносит телефон к табличке или сканирует QR — и сразу видит вашу страницу: меню, отзывы, Wi-Fi, соцсети, оплату. Чёрная версия — стильная замена бумажным меню и табличкам."
+  },
+  "tent-white": {
+    id: "tent-white",
+    name: "Тейбл-тент с NFC + QR — Белый",
+    short: "Тейбл-тент · Белый",
+    color: "Белый",
+    colorClass: "tent",
+    img: "tent-white",
+    tariff: "Для заведений",
+    price: 4790,
+    old: 6790,
+    tagline: "Настольная табличка с NFC и QR для кафе, ресторанов и салонов. Белая версия.",
+    includes: ["Тейбл-тент с NFC и QR (белый)", "Ваше название и логотип", "Первый месяц поддержки и сопровождения"],
+    features: [
+      "NFC и QR — открывается на любом смартфоне",
+      "Ваша страница: меню, отзывы, Wi-Fi, соцсети, оплата",
+      "Брендирование под ваше заведение",
+      "Без бумажных меню — стильно и удобно"
+    ],
+    desc: "Гость подносит телефон к табличке или сканирует QR — и сразу видит вашу страницу: меню, отзывы, Wi-Fi, соцсети, оплату. Белая версия — стильная замена бумажным меню и табличкам."
+  }
+};
+
+/* Порядок вывода в каталоге */
+const PRODUCT_ORDER = ["black-business", "black-basic", "white-basic", "white-business", "tent-black", "tent-white"];
+
+/* --- Утилиты --- */
+function money(n) { return n.toLocaleString("ru-RU") + " ₽"; }
+
+/* --- Мини-превью карточки (SVG-макет) --- */
+var SHOP_IMG={"black": ["sc-black-1-af941206.png", "sc-black-2-7ef9d867.png"], "white": ["sc-white-1-dfe0d1d7.png", "sc-white-2-d0d483d5.png"], "tent-black": ["sc-tent-black-1-73185236.png", "sc-tent-black-2-da008489.png"], "tent-white": ["sc-tent-white-1-b57ac488.png", "sc-tent-white-2-e1108314.png"]};
+function shopImgs(cc){ return SHOP_IMG[cc] || SHOP_IMG.black; }
+function carHTML(cc, alt){
+  return shopImgs(cc).map(function(s,i){
+    return '<img src="'+s+'"'+(i===0?' class="on"':'')+' alt="'+(alt||'')+'">';
+  }).join('');
+}
+function initCarousels(){
+  document.querySelectorAll('[data-car]').forEach(function(c){
+    if(c.__ci) return; c.__ci=1;
+    var imgs=c.querySelectorAll('img'); if(imgs.length<2) return;
+    var i=0;
+    setTimeout(function(){
+      setInterval(function(){
+        imgs[i].classList.remove('on');
+        i=(i+1)%imgs.length;
+        imgs[i].classList.add('on');
+      }, 2800);
+    }, Math.floor(Math.random()*1600));
+  });
+}
+function cardMock(p) {
+  var cc=p.img||p.colorClass;
+  var bg = cc==="tent" ? ' style="background:linear-gradient(135deg,#141a2e,#0d1017)"' : '';
+  var cls = cc==="tent" ? 'cardimg shopcar' : ('cardimg '+cc+' shopcar');
+  return '<div class="'+cls+'" data-car'+bg+'>'+carHTML(cc, p.short)+'</div>';
+}
+
+/* --- Корзина (localStorage) --- */
+const CART_KEY = "selfcards_cart";
+
+function getCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+  catch (e) { return []; }
+}
+function saveCart(cart) {
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {}
+  updateCartBadge();
+}
+function addToCart(id, qty) { if(window.scGoal) scGoal("add_to_cart",{id:id});
+  qty = parseInt(qty) || 1;
+  const cart = getCart();
+  const item = cart.find(function (x) { return x.id === id; });
+  if (item) { item.qty += qty; } else { cart.push({ id: id, qty: qty }); }
+  saveCart(cart);
+}
+function setQty(id, qty) {
+  qty = parseInt(qty) || 1;
+  if (qty < 1) qty = 1;
+  const cart = getCart();
+  const item = cart.find(function (x) { return x.id === id; });
+  if (item) { item.qty = qty; saveCart(cart); }
+}
+function removeFromCart(id) {
+  saveCart(getCart().filter(function (x) { return x.id !== id; }));
+}
+function cartCount() {
+  return getCart().reduce(function (s, x) { return s + x.qty; }, 0);
+}
+function cartTotal() {
+  return getCart().reduce(function (s, x) {
+    const p = PRODUCTS[x.id]; return p ? s + p.price * x.qty : s;
+  }, 0);
+}
+function updateCartBadge() {
+  const n = cartCount();
+  document.querySelectorAll(".cart-count").forEach(function (el) {
+    el.textContent = n;
+    el.style.display = n > 0 ? "inline-flex" : "none";
+  });
+}
+
+/* --- Всплывающее уведомление «добавлено» --- */
+function toast(text) {
+  var t = document.getElementById("toast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "toast";
+    t.className = "toast";
+    document.body.appendChild(t);
+  }
+  t.innerHTML = text;
+  t.classList.add("show");
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(function () { t.classList.remove("show"); }, 2200);
+}
+
+/* --- Отправка заказа со всей корзиной одной заявкой --- */
+async function submitOrder(customer) {
+  const cart = getCart();
+  if (!cart.length) throw new Error("empty");
+
+  var lines = [];
+  var total = 0;
+  var totalQty = 0;
+  cart.forEach(function (x) {
+    var p = PRODUCTS[x.id];
+    if (!p) return;
+    var sum = p.price * x.qty;
+    total += sum; totalQty += x.qty;
+    lines.push(x.qty + "×" + p.short + " — " + money(p.price) + " (" + money(sum) + ")");
+  });
+
+  var productSummary = cart.map(function (x) {
+    var p = PRODUCTS[x.id]; return p ? (x.qty + "×" + p.short) : "";
+  }).filter(Boolean).join(", ");
+
+  var commentFull =
+    "🛒 Состав заказа:\n" + lines.join("\n") +
+    "\nИтого: " + money(total) + " (" + totalQty + " шт.)" +
+    (customer.comment ? ("\n\nКомментарий клиента: " + customer.comment) : "");
+
+  var order = {
+    name: customer.name,
+    phone: customer.phone,
+    email: customer.email || "",
+    product: productSummary + " — итого " + money(total),
+    quantity: totalQty,
+    city: customer.city || "",
+    address: customer.address || "",
+    comment: commentFull
+  };
+
+  var res = await fetch(SUPABASE_URL + "/rest/v1/orders", {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      "Content-Type": "application/json",
+      "Prefer": "return=minimal"
+    },
+    body: JSON.stringify(order)
+  });
+  if (!res.ok) throw new Error("bad");
+  return true;
+}
+
+/* --- Инициализация счётчика на всех страницах --- */
+document.addEventListener("DOMContentLoaded", updateCartBadge);
+
+</script>
+<script>
+/* Правовые документы (Политика и Оферта) — общий модуль для всех страниц */
+(function () {
+  var html = '' +
+  '<div class="doc-overlay" id="doc-privacy" onclick="if(event.target===this)closeDoc(\'doc-privacy\')">' +
+    '<div class="doc-modal">' +
+      '<button class="doc-close" onclick="closeDoc(\'doc-privacy\')">&times;</button>' +
+      '<h2>Политика конфиденциальности</h2>' +
+      '<p class="doc-date">Дата публикации: 04.10.2026</p>' +
+      '<p>Настоящая Политика описывает, как обрабатываются персональные данные пользователей сайтов selfcards.ru, shop.selfcards.ru и app.selfcards.ru (далее — «Сайт»).</p>' +
+      '<h3>1. Оператор данных</h3>' +
+      '<p>Индивидуальный предприниматель Петров Богдан Васильевич, ИНН 504722781393.<br>Телефон: +7 926 492-11-23. Email: bo9petrow@yandex.ru. Telegram: @selfcard011.</p>' +
+      '<h3>2. Какие данные собираются</h3>' +
+      '<p>При оформлении заявки на Сайте могут собираться: имя, номер телефона, адрес электронной почты, город, адрес доставки (или пункт выдачи), а также комментарий к заказу. Данные предоставляются пользователем добровольно.</p>' +
+      '<h3>3. Цели обработки</h3>' +
+      '<p>Обработка и выполнение заказов, связь с покупателем для подтверждения заказа, организация доставки, информирование о статусе заказа, ответы на обращения.</p>' +
+      '<h3>4. Правовые основания</h3>' +
+      '<p>Согласие пользователя (выражается оформлением заказа на Сайте) и необходимость исполнения договора купли-продажи.</p>' +
+      '<h3>5. Передача третьим лицам</h3>' +
+      '<p>Данные могут передаваться службе доставки для доставки заказа, а также платёжному сервису ЮKassa для приёма онлайн-оплаты. Данные хранятся с использованием облачного сервиса баз данных. Оператор не продаёт и не передаёт данные третьим лицам в иных целях.</p>' +
+      '<h3>6. Хранение и защита</h3>' +
+      '<p>Данные хранятся не дольше, чем необходимо для целей обработки, и защищаются доступными техническими и организационными мерами.</p>' +
+      '<h3>7. Права пользователя</h3>' +
+      '<p>Пользователь вправе запросить доступ к своим данным, их изменение или удаление, а также отозвать согласие на обработку, направив обращение на указанные контакты Оператора.</p>' +
+      '<h3>8. Cookies</h3>' +
+      '<p>Сайт может использовать файлы cookie и аналогичные технологии для корректной работы. Пользователь может отключить cookie в настройках браузера.</p>' +
+      '<p>По всем вопросам обработки персональных данных обращайтесь: bo9petrow@yandex.ru.</p>' +
+    '</div>' +
+  '</div>' +
+  '<div class="doc-overlay" id="doc-offer" onclick="if(event.target===this)closeDoc(\'doc-offer\')">' +
+    '<div class="doc-modal">' +
+      '<button class="doc-close" onclick="closeDoc(\'doc-offer\')">&times;</button>' +
+      '<h2>Публичная оферта</h2>' +
+      '<p class="doc-date">Дата публикации: 04.10.2026</p>' +
+      '<p>Настоящий документ является публичной офертой (предложением заключить договор купли-продажи) Индивидуального предпринимателя Петрова Богдана Васильевича, ИНН 504722781393 (далее — «Продавец»), в адрес любого физического или юридического лица (далее — «Покупатель»).</p>' +
+      '<h3>1. Предмет</h3>' +
+      '<p>Продавец продаёт, а Покупатель приобретает товары, представленные на Сайте (NFC-визитки, наборы, тейбл-тенты и сопутствующие товары), на условиях настоящей оферты.</p>' +
+      '<h3>2. Оформление заказа</h3>' +
+      '<p>Покупатель оформляет заказ через форму на Сайте, указывая контактные данные и данные для доставки, и оплачивает его онлайн. Договор считается заключённым с момента оплаты заказа. После оплаты Продавец связывается с Покупателем для согласования макета и доставки.</p>' +
+      '<h3>3. Цена и оплата</h3>' +
+      '<p>Цены на товары указаны на Сайте в рублях РФ. Оплата производится онлайн на Сайте через платёжный сервис ЮKassa (ООО НКО «ЮMoney») при оформлении заказа. Покупателю направляется электронный кассовый чек. Стоимость доставки СДЭК рассчитывается на Сайте при оформлении заказа и оплачивается вместе с товаром.</p>' +
+      '<h3>4. Доставка</h3>' +
+      '<p>Доставка осуществляется службой СДЭК по территории РФ до пункта выдачи или курьером по адресу. Стоимость и ориентировочный срок доставки показываются на Сайте при оформлении заказа. Срок изготовления заказа — до 5 рабочих дней.</p>' +
+      '<h3>5. Возврат и обмен</h3>' +
+      '<p>Товар надлежащего качества может быть возвращён в течение 7 дней с момента получения (ст. 26.1 Закона «О защите прав потребителей») при сохранении товарного вида и потребительских свойств.</p>' +
+      '<p><b>Исключение:</b> товары, изготовленные индивидуально по заказу Покупателя (с нанесением имени, логотипа, персональных данных, индивидуальной настройкой), возврату и обмену как товар надлежащего качества не подлежат.</p>' +
+      '<p>Товар ненадлежащего качества возвращается или обменивается в соответствии с законодательством РФ.</p>' +
+      '<h3>6. Ответственность</h3>' +
+      '<p>Стороны несут ответственность в соответствии с законодательством РФ. Продавец не несёт ответственности за задержки, вызванные действиями служб доставки или обстоятельствами непреодолимой силы.</p>' +
+      '<h3>7. Реквизиты Продавца</h3>' +
+      '<p>Индивидуальный предприниматель Петров Богдан Васильевич, ИНН 504722781393.<br>Телефон: +7 926 492-11-23. Email: bo9petrow@yandex.ru. Telegram: @selfcard011.</p>' +
+    '</div>' +
+  '</div>';
+  html += '' +
+  '<div class="tg-pop" id="tgPop">' +
+    '<button class="tg-close-x" onclick="closeTg()">&times;</button>' +
+    '<h4>Подпишитесь на наш Телеграм</h4>' +
+    '<p>Новинки, акции и полезное про NFC-визитки и тейбл-тенты.</p>' +
+    '<div class="tg-row">' +
+      '<a class="btn btn-grad" href="https://t.me/selfcard011" target="_blank" rel="noreferrer" style="flex:1" onclick="closeTg()">Подписаться</a>' +
+      '<button class="btn btn-ghost" onclick="closeTg()">Позже</button>' +
+    '</div>' +
+  '</div>';
+  var d = document.createElement("div");
+  d.innerHTML = html;
+  document.body.appendChild(d);
+
+  // показать попап Телеграма один раз
+  try { if (!localStorage.getItem("tg_seen")) {
+    setTimeout(function () { var p = document.getElementById("tgPop"); if (p) p.classList.add("show"); }, 2500);
+  }} catch (e) {}
+
+  // кнопка «Наверх»
+  var top = document.createElement("button");
+  top.className = "to-top";
+  top.setAttribute("aria-label", "Наверх");
+  top.innerHTML = '<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>';
+  top.onclick = function () { window.scrollTo({ top: 0, behavior: "smooth" }); };
+  document.body.appendChild(top);
+  window.addEventListener("scroll", function () {
+    if (window.scrollY > 500) top.classList.add("show"); else top.classList.remove("show");
+  });
+})();
+function openDoc(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeDoc(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+function closeTg(){var p=document.getElementById('tgPop');if(p)p.classList.remove('show');try{localStorage.setItem('tg_seen','1');}catch(e){}}
+
+</script>
+<script>
+  function getParam(n){ return new URLSearchParams(location.search).get(n); }
+  var id = getParam("id");
+  var p = PRODUCTS[id];
+  var box = document.getElementById("pdp");
+
+  if(!p){
+    box.innerHTML = '<div class="empty-cart"><div class="big">🔍</div><h2>Товар не найден</h2>'+
+      '<p style="margin:10px 0 20px">Возможно, ссылка устарела.</p>'+
+      '<a class="btn btn-grad" href="index.html#catalog">Вернуться в каталог</a></div>';
+  } else {
+    document.title = p.name + " — SELFCARDS";
+    var cl = document.querySelector('link[rel="canonical"]'); if (cl) cl.href = "https://shop.selfcards.ru/product.html?id=" + id;
+    document.getElementById("crumb-name").textContent = p.short;
+
+    var old = p.old ? '<span class="old">'+money(p.old)+'</span>' : '';
+    var save = p.old ? '<span class="pill tag-tariff" style="margin-left:6px">−'+money(p.old-p.price)+'</span>' : '';
+    var includes = p.includes.map(function(i){return '<li><span class="dot">✓</span> '+i+'</li>';}).join('');
+    var features = p.features.map(function(i){return '<li><span class="dot">✓</span> '+i+'</li>';}).join('');
+
+    box.innerHTML =
+      '<div class="pdp">'+
+        '<div class="glass gallery cardimg '+(p.colorClass==="tent"?"":p.colorClass)+'"'+(p.colorClass==="tent"?' style="background:linear-gradient(135deg,#141a2e,#0d1017)"':'')+'>'+cardMockBig(p)+'</div>'+
+        '<div>'+
+          '<div class="tags"><span class="pill tag-color">'+p.color+'</span><span class="pill tag-tariff">Тариф «'+p.tariff+'»</span></div>'+
+          '<h1>'+p.name+'</h1>'+
+          '<p class="tagline">'+p.tagline+'</p>'+
+          '<div class="price"><span class="now">'+money(p.price)+'</span>'+old+save+'</div>'+
+
+          '<div class="block-title">Что входит</div>'+
+          '<ul class="spec">'+includes+'</ul>'+
+
+          '<div class="qtyrow">'+
+            '<span style="color:var(--t2);font-size:14px">Количество</span>'+
+            '<div class="qty"><button type="button" onclick="chg(-1)">−</button><input id="pqty" type="number" min="1" value="1"><button type="button" onclick="chg(1)">+</button></div>'+
+          '</div>'+
+          '<div class="buyrow">'+
+            '<button class="btn btn-ghost" onclick="addCur(false)">В корзину</button>'+
+            '<button class="btn btn-grad" onclick="addCur(true)">Купить сейчас</button>'+
+          '</div>'+
+
+          '<div class="trust">'+
+            '<span>🚚 Доставка по РФ</span>'+
+            '<span>🛠 Изготовление до 5 дней</span>'+
+            '<span>♻ Смена данных онлайн</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+
+      '<section>'+
+        '<h2 style="font-size:24px">Описание</h2>'+
+        '<p class="sub" style="max-width:820px;font-size:15px;color:var(--t2)">'+p.desc+'</p>'+
+        '<div class="block-title" style="margin-top:26px">Возможности</div>'+
+        '<ul class="spec" style="max-width:620px">'+features+'</ul>'+
+        '<div class="block-title" style="margin-top:26px">Характеристики</div>'+
+        '<ul class="spec" style="max-width:620px">'+
+          '<li><span class="dot">•</span> Материал: пластик, размер как банковская карта</li>'+
+          '<li><span class="dot">•</span> Чтение NFC на расстоянии 1–3 см + QR-код</li>'+
+          '<li><span class="dot">•</span> Работает без приложений на современных смартфонах</li>'+
+          '<li><span class="dot">•</span> Срок изготовления — до 5 рабочих дней</li>'+
+          '<li><span class="dot">•</span> Доставка — по всей России</li>'+
+        '</ul>'+
+      '</section>';
+  }
+  initCarousels();
+
+  function cardMockBig(p){
+    return '<div class="shopcar" data-car style="position:absolute;inset:0">'+carHTML(p.img||p.colorClass, p.name)+'</div>';
+  }
+  function chg(d){ var i=document.getElementById("pqty"); var v=(parseInt(i.value)||1)+d; if(v<1)v=1; i.value=v; }
+  function addCur(go){
+    var q = parseInt(document.getElementById("pqty").value)||1;
+    addToCart(id, q);
+    if(go){ location.href="cart.html"; }
+    else { toast('<span class="ok">✓</span> Добавлено в корзину'); }
+  }
+</script>
+</body>
+</html>
