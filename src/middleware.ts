@@ -14,7 +14,10 @@ export function middleware(req: NextRequest) {
   const host = raw.split(",")[0].trim().split(":")[0].toLowerCase();
   if (SHOP_HOSTS.has(host)) {
     const { pathname, search } = req.nextUrl;
-    return NextResponse.redirect(`https://shop.selfcards.ru${pathname}${search}`, 301);
+    // Главную отдаём как /index.html: CDN магазина отвечает 403 на «/» с длинными
+    // метками в адресе (например, yclid из Яндекс Рекламы), а /index.html — нормально.
+    const path = pathname === "/" ? "/index.html" : pathname;
+    return NextResponse.redirect(`https://shop.selfcards.ru${path}${search}`, 301);
   }
   return NextResponse.next();
 }
