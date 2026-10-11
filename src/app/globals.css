@@ -83,35 +83,33 @@ body {
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
-  /* Размытие всего звёздного слоя */
-  filter: blur(1.4px);
+  /* Размытие слоя (filter: blur) убрано: браузер перерисовывал весь экран
+     на каждом кадре анимации — на телефонах это тормозило прокрутку.
+     Мягкость звёзд теперь даёт радиальный градиент. */
 }
 
 .star {
   position: absolute;
   border-radius: 9999px;
-  background: #ffffff;
+  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.55) 45%, rgba(255, 255, 255, 0) 75%);
   opacity: 0.7;
   animation: star-twinkle var(--dur, 3s) ease-in-out infinite;
   animation-delay: var(--delay, 0s);
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
 /* Крупные звёзды размыты сильнее — эффект глубины */
 .star-lg {
-  filter: blur(0.6px);
-  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.35);
 }
 
 @keyframes star-twinkle {
   0%,
   100% {
     opacity: 0.15;
-    transform: translateY(0) scale(0.9);
   }
   50% {
     opacity: 0.9;
-    transform: translateY(-3px) scale(1.15);
   }
 }
 
