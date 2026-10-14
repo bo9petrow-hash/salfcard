@@ -32,7 +32,7 @@ const MENU_ITEMS = [
   },
   {
     label: "Телеграм-канал",
-    href: "https://t.me/selfcard011",
+    href: "https://t.me/selfcard_nfc",
     icon: Send,
     external: true,
   },
