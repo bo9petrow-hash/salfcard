@@ -444,8 +444,8 @@ const PRODUCTS = {
     colorClass: "tent",
     img: "tent-black",
     tariff: "Для заведений",
-    price: 3790,
-    old: 4790,
+    price: 2790,
+    old: 3790,
     tagline: "Настольная табличка с NFC для кафе, ресторанов и салонов. Чёрная версия.",
     includes: ["Тейбл-тент с NFC (чёрный)", "Работает на iPhone и Android — без приложений", "Ваше название и логотип", "Первый месяц поддержки и сопровождения"],
     features: [
@@ -467,8 +467,8 @@ const PRODUCTS = {
     colorClass: "tent",
     img: "tent-white",
     tariff: "Для заведений",
-    price: 3790,
-    old: 4790,
+    price: 2790,
+    old: 3790,
     tagline: "Настольная табличка с NFC для кафе, ресторанов и салонов. Белая версия.",
     includes: ["Тейбл-тент с NFC (белый)", "Работает на iPhone и Android — без приложений", "Ваше название и логотип", "Первый месяц поддержки и сопровождения"],
     features: [
@@ -490,8 +490,8 @@ const PRODUCTS = {
       "family": "rev",
       "pair": "rev-ya-white",
       "catalog": true,
-      "price": 4790,
-      "old": 0,
+      "price": 3790,
+      "old": 4790,
       "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах.",
       "includes": [
           "Тейбл-тент A6 с NFC-меткой (чёрный)",
@@ -524,8 +524,8 @@ const PRODUCTS = {
       "family": "rev",
       "pair": "rev-ya-black",
       "catalog": false,
-      "price": 4790,
-      "old": 0,
+      "price": 3790,
+      "old": 4790,
       "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах.",
       "includes": [
           "Тейбл-тент A6 с NFC-меткой (белый)",
@@ -558,8 +558,8 @@ const PRODUCTS = {
       "family": "rev",
       "pair": "rev-gis-white",
       "catalog": true,
-      "price": 4790,
-      "old": 0,
+      "price": 3790,
+      "old": 4790,
       "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв в 2ГИС.",
       "includes": [
           "Тейбл-тент A6 с NFC-меткой (чёрный)",
@@ -592,8 +592,8 @@ const PRODUCTS = {
       "family": "rev",
       "pair": "rev-gis-black",
       "catalog": false,
-      "price": 4790,
-      "old": 0,
+      "price": 3790,
+      "old": 4790,
       "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв в 2ГИС.",
       "includes": [
           "Тейбл-тент A6 с NFC-меткой (белый)",
@@ -626,8 +626,8 @@ const PRODUCTS = {
       "family": "rev",
       "pair": "rev-duo-white",
       "catalog": true,
-      "price": 4790,
-      "old": 0,
+      "price": 3790,
+      "old": 4790,
       "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах или в 2ГИС.",
       "includes": [
           "Тейбл-тент A6 с NFC-меткой (чёрный)",
@@ -660,8 +660,8 @@ const PRODUCTS = {
       "family": "rev",
       "pair": "rev-duo-black",
       "catalog": true,
-      "price": 4790,
-      "old": 0,
+      "price": 3790,
+      "old": 4790,
       "tagline": "Мини-табличка для стола и кассы: гость прикладывает телефон — и сразу оставляет отзыв на Яндекс Картах или в 2ГИС.",
       "includes": [
           "Тейбл-тент A6 с NFC-меткой (белый)",
@@ -693,8 +693,8 @@ function money(n) { return n.toLocaleString("ru-RU") + " ₽"; }
 
 /* --- Оптовые цены на тейбл-тенты: скидка по общему количеству в линейке --- */
 const TIERS = {
-  brand: [[1,3790],[5,3390],[10,3190],[20,2990],[50,2790]],
-  rev:   [[1,4790],[5,4290],[10,3990],[20,3790],[50,3490]]
+  brand: [[1,2790],[5,2390],[10,2190],[20,1990],[50,1790]],
+  rev:   [[1,3790],[5,3290],[10,2990],[20,2790],[50,2490]]
 };
 function famQty(fam, cart){ cart = cart || getCart(); return cart.reduce(function(s,x){ var p=PRODUCTS[x.id]; return p && p.family===fam ? s + x.qty : s; }, 0); }
 function tierFor(fam, q){ var u = TIERS[fam][0][1]; TIERS[fam].forEach(function(t){ if(q>=t[0]) u=t[1]; }); return u; }
