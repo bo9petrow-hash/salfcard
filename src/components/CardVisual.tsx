@@ -31,9 +31,13 @@ import {
   actionButtonHref,
   buildVCard,
   cn,
+  copyableValue,
   downloadFile,
+  mailHref,
   normalizeSettings,
   normalizeUrl,
+  socialHref,
+  telHref,
 } from "@/lib/utils";
 import type { Multilink, BusinessInfo } from "@/types";
 
@@ -114,22 +118,22 @@ export function CardVisual({
     c.social.telegram && {
       icon: <Send size={17} />,
       label: "Telegram",
-      href: `https://t.me/${c.social.telegram.replace(/^@/, "")}`,
+      href: socialHref("telegram", c.social.telegram),
     },
     c.social.messenger && {
       icon: <MessageCircle size={17} />,
       label: "Мессенджер",
-      href: `tel:${c.social.messenger}`,
+      href: telHref(c.social.messenger),
     },
     c.social.vk && {
       icon: <AtSign size={17} />,
       label: "VK",
-      href: `https://vk.com/${c.social.vk}`,
+      href: socialHref("vk", c.social.vk),
     },
     c.social.youtube && {
       icon: <Youtube size={17} />,
       label: "YouTube",
-      href: `https://youtube.com/${c.social.youtube}`,
+      href: socialHref("youtube", c.social.youtube),
     },
     c.social.rutube && {
       icon: <Play size={17} />,
@@ -195,19 +199,26 @@ export function CardVisual({
 
         <div className="space-y-6 px-5 py-6">
           {/* Кнопка действия */}
-          {showAction && (
-            <a
-              href={
-                actionButtonHref(c.actionButton.label, c.actionButton.url) ||
-                "#"
-              }
-              target="_blank"
-              rel="noreferrer"
-              className="btn-grad flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold"
-            >
-              {c.actionButton.label}
-            </a>
-          )}
+          {showAction &&
+            (copyableValue(c.actionButton.label, c.actionButton.url) ? (
+              <CopyButton
+                label={c.actionButton.label}
+                value={copyableValue(c.actionButton.label, c.actionButton.url)}
+                className="btn-grad flex min-h-12 w-full flex-col items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold"
+              />
+            ) : (
+              <a
+                href={
+                  actionButtonHref(c.actionButton.label, c.actionButton.url) ||
+                  "#"
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="btn-grad flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold"
+              >
+                {c.actionButton.label}
+              </a>
+            ))}
 
           {isOffline ? (
             <OfflineSections b={b} />
@@ -218,12 +229,12 @@ export function CardVisual({
                 <ContactRow
                   icon={<Phone size={16} />}
                   value={c.personal.phone}
-                  href={`tel:${c.personal.phone}`}
+                  href={telHref(c.personal.phone)}
                 />
                 <ContactRow
                   icon={<Mail size={16} />}
                   value={c.personal.email}
-                  href={`mailto:${c.personal.email}`}
+                  href={mailHref(c.personal.email)}
                 />
                 <ContactRow
                   icon={<Globe size={16} />}
@@ -249,12 +260,12 @@ export function CardVisual({
                   <ContactRow
                     icon={<Phone size={16} />}
                     value={c.work.phone}
-                    href={`tel:${c.work.phone}`}
+                    href={telHref(c.work.phone)}
                   />
                   <ContactRow
                     icon={<Mail size={16} />}
                     value={c.work.email}
-                    href={`mailto:${c.work.email}`}
+                    href={mailHref(c.work.email)}
                   />
                   <ContactRow
                     icon={<Globe size={16} />}
@@ -382,6 +393,55 @@ function ContactRow({
   );
 }
 
+/**
+ * Кнопка, которая копирует номер (карты или телефона для СБП) вместо
+ * перехода по ссылке: раньше такой номер превращался в «https://2202…»
+ * и кнопка открывала пустую страницу.
+ */
+function CopyButton({
+  label,
+  value,
+  className,
+  icon,
+}: {
+  label: string;
+  value: string;
+  className: string;
+  icon?: React.ReactNode;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    const text = value.replace(/[\s()-]/g, "");
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+      } catch {
+        /* ignore */
+      }
+      ta.remove();
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2500);
+  };
+  return (
+    <button type="button" onClick={copy} className={className}>
+      <span className="inline-flex items-center gap-2">
+        {icon}
+        {copied ? "Номер скопирован" : label}
+      </span>
+      <span className="text-[11px] font-normal opacity-80">
+        {value} · нажмите, чтобы скопировать
+      </span>
+    </button>
+  );
+}
+
 function LinkButton({
   label,
   href,
@@ -425,17 +485,25 @@ function OfflineSections({ b }: { b: BusinessInfo }) {
               Меню
             </a>
           )}
-          {b.payment && (
-            <a
-              href={normalizeUrl(b.payment)}
-              target="_blank"
-              rel="noreferrer"
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 text-sm font-semibold text-white transition-colors hover:border-brand-light"
-            >
-              <CreditCard size={17} className="text-brand-light" />
-              Оплата
-            </a>
-          )}
+          {b.payment &&
+            (copyableValue("оплата", b.payment) ? (
+              <CopyButton
+                label="Оплата"
+                value={copyableValue("оплата", b.payment)}
+                icon={<CreditCard size={17} className="text-brand-light" />}
+                className="flex min-h-12 w-full flex-col items-center justify-center gap-0.5 rounded-xl border border-white/12 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition-colors hover:border-brand-light"
+              />
+            ) : (
+              <a
+                href={normalizeUrl(b.payment)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 text-sm font-semibold text-white transition-colors hover:border-brand-light"
+              >
+                <CreditCard size={17} className="text-brand-light" />
+                Оплата
+              </a>
+            ))}
         </div>
       )}
 
