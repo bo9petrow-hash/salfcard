@@ -55,7 +55,34 @@ export function tierPrice(product: Product, familyQty: number): number {
  * Бросает ошибку, если sku неизвестен или количество некорректно.
  * В строках product.price — уже итоговая цена за штуку с оптовой скидкой.
  */
-export function parseCart(items: any): { lines: CartLine[]; total: number } {
+/**
+ * Промокоды: скидка в процентах на товары (доставка без скидки).
+ * Список можно переопределить переменной PROMO_CODES="TIKTOK:10,INSTA:10".
+ */
+const DEFAULT_PROMOS = "TIKTOK:10,INSTA:10,TG:10";
+
+export function promoTable(): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const part of String(process.env.PROMO_CODES || DEFAULT_PROMOS).split(",")) {
+    const [code, pct] = part.split(":").map((x) => x.trim());
+    const n = Number(pct);
+    if (code && Number.isFinite(n) && n > 0 && n < 90) out[code.toUpperCase()] = n;
+  }
+  return out;
+}
+
+/** Проверяет промокод. Возвращает { code, percent } или null. */
+export function findPromo(raw: any): { code: string; percent: number } | null {
+  const code = String(raw || "").trim().toUpperCase().replace(/\s+/g, "");
+  if (!code) return null;
+  const percent = promoTable()[code];
+  return percent ? { code, percent } : null;
+}
+
+export function parseCart(
+  items: any,
+  promoRaw?: any
+): { lines: CartLine[]; total: number; subtotal: number; promo: { code: string; percent: number } | null } {
   if (!Array.isArray(items) || items.length === 0) {
     throw new Error("Корзина пуста");
   }
@@ -71,12 +98,19 @@ export function parseCart(items: any): { lines: CartLine[]; total: number } {
   }
   const famQty: Record<string, number> = {};
   for (const l of raw) if (l.product.family) famQty[l.product.family] = (famQty[l.product.family] || 0) + l.qty;
+  const promo = findPromo(promoRaw);
+  if (promoRaw && String(promoRaw).trim() && !promo) throw new Error("Промокод не найден");
   let total = 0;
+  let subtotal = 0;
   const lines = raw.map((l) => {
-    const price = tierPrice(l.product, l.product.family ? famQty[l.product.family] : 0);
+    const base = tierPrice(l.product, l.product.family ? famQty[l.product.family] : 0);
+    // Скидку по промокоду закладываем прямо в цену за штуку — так сумма в чеке
+    // (54-ФЗ) всегда совпадает с суммой платежа.
+    const price = promo ? Math.round(base * (100 - promo.percent) / 100) : base;
+    subtotal += base * l.qty;
     total += price * l.qty;
     return { product: { ...l.product, price }, qty: l.qty };
   });
   if (total <= 0) throw new Error("Сумма заказа равна нулю");
-  return { lines, total };
+  return { lines, total, subtotal, promo };
 }
