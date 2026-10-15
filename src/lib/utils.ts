@@ -156,10 +156,67 @@ export function downloadFile(filename: string, content: string, mime: string) {
 }
 
 /** Нормализация URL для внешних ссылок. */
+const PHONE_LIKE = /^\+?\d[\d\s()-]{5,}$/;
+const EMAIL_LIKE = /^[^\s@/]+@[^\s@/]+\.[^\s@/]+$/;
+
+/** tel:-ссылка без пробелов, скобок и дефисов ("+7 909 774 78 83" → "tel:+79097747883"). */
+export function telHref(value: string): string {
+  const d = (value || "").replace(/[^\d+]/g, "");
+  return d ? `tel:${d}` : "";
+}
+
+/** mailto:-ссылка без лишних пробелов по краям. */
+export function mailHref(value: string): string {
+  const v = (value || "").trim();
+  return v ? `mailto:${v}` : "";
+}
+
+/**
+ * Приводит введённое значение к рабочей ссылке.
+ * «site.ru» → https://site.ru, почта → mailto:, телефон → tel:,
+ * готовые ссылки (https:, tel:, mailto:, tg: …) — как есть.
+ */
 export function normalizeUrl(value: string): string {
-  if (!value) return "";
-  if (/^https?:\/\//i.test(value)) return value;
-  return `https://${value}`;
+  const v = (value || "").trim();
+  if (!v) return "";
+  if (/^(https?:|tel:|mailto:|tg:|sms:|whatsapp:|viber:)/i.test(v)) return v;
+  if (EMAIL_LIKE.test(v)) return `mailto:${v}`;
+  if (PHONE_LIKE.test(v) && v.replace(/\D/g, "").length <= 12) return telHref(v);
+  return `https://${v.replace(/^\/+/, "")}`;
+}
+
+/**
+ * Значение, которое лучше КОПИРОВАТЬ, а не открывать как ссылку:
+ * номер карты (13–19 цифр) или телефон для перевода по СБП
+ * (кнопка «Перевести», «Оплата», «СБП»). Иначе — пустая строка.
+ */
+export function copyableValue(label: string, value: string): string {
+  const v = (value || "").trim();
+  if (!v || /^(https?:|tel:|mailto:)/i.test(v)) return "";
+  const digits = v.replace(/[\s-]/g, "");
+  if (/^\d{13,19}$/.test(digits)) return v;
+  const l = (label || "").toLowerCase();
+  if ((l.includes("перев") || l.includes("оплат") || l.includes("сбп")) && PHONE_LIKE.test(v)) return v;
+  return "";
+}
+
+/** Ссылка на соцсеть: принимает и ник (@name), и полную ссылку. */
+export function socialHref(
+  kind: "telegram" | "vk" | "youtube",
+  value: string
+): string {
+  const v = (value || "").trim();
+  if (!v) return "";
+  const hosts: Record<string, RegExp> = {
+    telegram: /(^|\/\/|\.)(t\.me|telegram\.me)\//i,
+    vk: /(^|\/\/|\.)(vk\.com|vk\.ru)\//i,
+    youtube: /(^|\/\/|\.)(youtube\.com|youtu\.be)\//i,
+  };
+  if (/^https?:\/\//i.test(v) || hosts[kind].test(v)) return normalizeUrl(v);
+  const nick = v.replace(/^@/, "");
+  if (kind === "telegram") return `https://t.me/${nick}`;
+  if (kind === "vk") return `https://vk.com/${nick}`;
+  return `https://youtube.com/${nick.includes("/") ? nick : "@" + nick}`;
 }
 
 /**
@@ -171,14 +228,11 @@ export function actionButtonHref(label: string, value: string): string {
   const v = (value || "").trim();
   if (!v) return "";
   const l = (label || "").toLowerCase();
-  const looksPhone = /^[+\d][\d\s()-]{4,}$/.test(v);
-  const looksEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const looksPhone = PHONE_LIKE.test(v);
+  const looksEmail = EMAIL_LIKE.test(v);
 
   if ((l.includes("позвонить") || l.includes("звонок")) && looksPhone) {
-    return `tel:${v.replace(/[\s()-]/g, "")}`;
-  }
-  if (l.includes("почт") || l.includes("mail") || l.includes("email")) {
-    if (looksEmail) return `mailto:${v}`;
+    return telHref(v);
   }
   if (looksEmail && !/^https?:\/\//i.test(v)) {
     return `mailto:${v}`;
