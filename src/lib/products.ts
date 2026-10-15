@@ -18,8 +18,8 @@ export interface Product {
  * [от скольких штук, цена за штуку]
  */
 export const TIERS = {
-  brand: [[1, 3790], [5, 3390], [10, 3190], [20, 2990], [50, 2790]],
-  rev: [[1, 4790], [5, 4290], [10, 3990], [20, 3790], [50, 3490]],
+  brand: [[1, 2790], [5, 2390], [10, 2190], [20, 1990], [50, 1790]],
+  rev: [[1, 3790], [5, 3290], [10, 2990], [20, 2790], [50, 2490]],
 } as const;
 
 export const PRODUCTS: Record<string, Product> = {
@@ -27,14 +27,14 @@ export const PRODUCTS: Record<string, Product> = {
   card_white_basic: { sku: "card_white_basic", title: "Набор «Базовый»: NFC-визитка + MagSafe-картхолдер (белые)", price: 1590 },
   card_black_business: { sku: "card_black_business", title: "Набор «Бизнес»: NFC-визитка + MagSafe-картхолдер (чёрные)", price: 1890 },
   card_white_business: { sku: "card_white_business", title: "Набор «Бизнес»: NFC-визитка + MagSafe-картхолдер (белые)", price: 1890 },
-  tent_black: { sku: "tent_black", title: "Фирменный тейбл-тент (чёрный)", price: 3790, family: "brand" },
-  tent_white: { sku: "tent_white", title: "Фирменный тейбл-тент (белый)", price: 3790, family: "brand" },
-  rev_ya_black: { sku: "rev_ya_black", title: "Тейбл-тент «Отзывы на картах» Яндекс Карты (чёрный)", price: 4790, family: "rev" },
-  rev_ya_white: { sku: "rev_ya_white", title: "Тейбл-тент «Отзывы на картах» Яндекс Карты (белый)", price: 4790, family: "rev" },
-  rev_gis_black: { sku: "rev_gis_black", title: "Тейбл-тент «Отзывы на картах» 2ГИС (чёрный)", price: 4790, family: "rev" },
-  rev_gis_white: { sku: "rev_gis_white", title: "Тейбл-тент «Отзывы на картах» 2ГИС (белый)", price: 4790, family: "rev" },
-  rev_duo_black: { sku: "rev_duo_black", title: "Тейбл-тент «Отзывы на картах» Яндекс+2ГИС (чёрный)", price: 4790, family: "rev" },
-  rev_duo_white: { sku: "rev_duo_white", title: "Тейбл-тент «Отзывы на картах» Яндекс+2ГИС (белый)", price: 4790, family: "rev" },
+  tent_black: { sku: "tent_black", title: "Фирменный тейбл-тент (чёрный)", price: 2790, family: "brand" },
+  tent_white: { sku: "tent_white", title: "Фирменный тейбл-тент (белый)", price: 2790, family: "brand" },
+  rev_ya_black: { sku: "rev_ya_black", title: "Тейбл-тент «Отзывы на картах» Яндекс Карты (чёрный)", price: 3790, family: "rev" },
+  rev_ya_white: { sku: "rev_ya_white", title: "Тейбл-тент «Отзывы на картах» Яндекс Карты (белый)", price: 3790, family: "rev" },
+  rev_gis_black: { sku: "rev_gis_black", title: "Тейбл-тент «Отзывы на картах» 2ГИС (чёрный)", price: 3790, family: "rev" },
+  rev_gis_white: { sku: "rev_gis_white", title: "Тейбл-тент «Отзывы на картах» 2ГИС (белый)", price: 3790, family: "rev" },
+  rev_duo_black: { sku: "rev_duo_black", title: "Тейбл-тент «Отзывы на картах» Яндекс+2ГИС (чёрный)", price: 3790, family: "rev" },
+  rev_duo_white: { sku: "rev_duo_white", title: "Тейбл-тент «Отзывы на картах» Яндекс+2ГИС (белый)", price: 3790, family: "rev" },
 };
 
 export interface CartLine {
